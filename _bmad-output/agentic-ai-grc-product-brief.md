@@ -101,6 +101,28 @@ Based on competitive research (see `_bmad-output/competitive-research-explainabi
 
 Key competitor to watch: **Hyperproof** (Jan 2026 early access) — closest positioning with HITL + explainability; differentiate on depth and cyber defence integration.
 
+### Competitive and feature refinement update (Mar 2026)
+
+Refreshed research confirms incumbents are accelerating in AI governance operations and packaging, while many still lack decision-level explainability with auditable challenge resolution.
+
+**What changed in market signal**
+- ServiceNow AI Control Tower emphasizes centralized inventory, guardrails, and value tracking.
+- Archer and peers continue expanding regulatory breadth and intelligence scale.
+- IBM advances agentic evaluation and monitoring in production governance contexts.
+- Hyperproof, Drata, Vanta, and AuditBoard continue operational AI workflow rollout.
+
+**Evonix refinement decision**
+- Win on **trust architecture depth** (DecisionLog + Challenge + per-action authorization evidence), then match market expectations on connector coverage and regulatory freshness SLA.
+
+**Must-Win feature pillars**
+1. Explainability Evidence Fabric
+2. Controlled Agent Autonomy
+3. Regulatory Change-to-Action loop
+4. Cyber-to-GRC closed loop
+
+Detailed analysis and recommendations:  
+`_bmad-output/planning-artifacts/competitive-analysis-and-feature-refinement-2026-03-08.md`
+
 ---
 
 ## 2. Personas

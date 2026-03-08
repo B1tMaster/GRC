@@ -44,6 +44,26 @@ Evonix is an AI-native Governance, Risk & Compliance platform that consolidates 
 - Fully autonomous remediation actions without human validation.
 - Fully autonomous cyber response for critical/high severity (always requires HITL in v1).
 
+### Feature Refinement Update (Mar 2026, competition-informed)
+Based on refreshed competitor analysis (ServiceNow, Hyperproof, Archer, IBM, Vanta, Drata, AuditBoard), v1 must optimize for trust and operational proof, not breadth.
+
+**Must-Win v1 outcomes**
+- Regulator-ready packet generation in minutes, not days.
+- Auditable controlled autonomy (agent identity, delegation, per-action auth evidence).
+- Regulatory change impact decisions within one operating cycle.
+- Cyber incident actions linked to risk/control posture by default.
+
+**Must-Win v1 feature pillars**
+1. Explainability Evidence Fabric (DecisionLog, challenge workflow, report/audit exports, replayability)
+2. Controlled Agent Autonomy (identity isolation, scoped delegation, per-action authorization, fail-closed states)
+3. Regulatory Change-to-Action loop (HKMA/MAS ingestion SLA, normalized requirements, impact analysis, action backlog)
+4. Cyber-to-GRC closed loop (alert/incident/response with HITL and risk/control linkage)
+
+**Defer to later phases**
+- Cross-enterprise audit consortium and broad marketplace-style ecosystem.
+- Fully autonomous critical response/remediation.
+- Global regulator coverage expansion beyond priority markets unless contract-driven.
+
 ## 4. Personas
 ### Primary
 - CISO (2L): oversight, board reporting, risk posture.
@@ -242,6 +262,15 @@ ROUTING: 2L Compliance Manager
 - FR-46: On-demand generation of Explainability Report (plain language, 1–2 pages, business impact) and Audit Trail Pack (technical, full source citations, audit trail excerpt) for a configurable scope (e.g. time window, process, entity, incident).
 - FR-47: When regulations change, platform shall support impact assessment against the 6-layer framework and existing controls; changes to thresholds, HITL rules, or mappings shall be logged in AuditTrailEntry.
 
+### Competition-Informed Additions (Mar 2026)
+- FR-48: Regulatory Freshness SLA — At least 95% of HKMA/MAS updates shall appear in product within 24 hours of official publication timestamp, with ingestion timestamp recorded.
+- FR-49: Decision Replay — For any AI recommendation, users shall be able to replay input -> source evidence -> reasoning -> confidence -> routing -> human actions in no more than 5 UI interactions.
+- FR-50: Challenge SLA Policy — Challenge workflow shall support policy-configurable SLAs, escalation rules, and breach alerts (e.g., 80% high-priority challenges resolved within 5 business days).
+- FR-51: Authorization Explainability — Every allowed/blocked agent action shall store policy reason code, delegated authority source, and context snapshot in AuditTrailEntry.
+- FR-52: Cyber Linkage Coverage — At least 90% of critical incidents shall be linked to one or more risk records and one or more control records before incident closure.
+- FR-53: Pilot Connectors — v1 shall provide at least two SIEM connectors and one identity/HR connector for ownership and org mapping workflows.
+- FR-54: Regulator Packet Readiness — System shall generate a scoped regulator packet (Explainability Report + Audit Trail Pack) within 2 minutes for standard dataset size.
+
 ## 7. Non-Functional Requirements
 ### Performance
 - NFR-1: Support at least 10,000 risks, 5,000 controls, and 20,000 issues.
@@ -361,6 +390,7 @@ All four gates must pass in UAT and pilot readiness review:
 - [Agentic Cyber Defence](../docs/AGENTIC-CYBER-DEFENCE.md)
 - [Regulatory Risk Strategy](../docs/REGULATORY-RISK-STRATEGY.md)
 - [Competitive Research: AI Explainability in GRC (Feb 2026)](competitive-research-explainability-2026.md)
+- [Competitive Analysis + Feature Refinement (Mar 2026)](planning-artifacts/competitive-analysis-and-feature-refinement-2026-03-08.md)
 - [Product Brief](agentic-ai-grc-product-brief.md)
 - [Prisma Schema (data model)](../prisma/schema.prisma)
 - [Prototype (UI visualization)](../netlify-demo/prototype.html)
