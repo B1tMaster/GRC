@@ -42,6 +42,13 @@ The offering is positioned as a system of action, not just a reporting dashboard
 - HITL approval for critical/high-severity actions.
 - Explainable, auditable cyber decisions with rationale and confidence.
 
+### 6) SecurePath Integration Layer (new)
+- Integration Hub connector for SecurePath findings, remediation tasks, and evidence artifacts.
+- Canonical mapping into Evonix events/models so vendor schema changes do not break core workflows.
+- SecurePath signals can trigger CyberAlert/Incident workflows and update risk/control assurance posture.
+- Source-to-decision traceability preserved through DecisionLog and AuditTrailEntry for regulator replay.
+- Recommended rollout: read-first integration, then optional bi-directional status sync after mapping quality is proven.
+
 ## Product Spec at a Glance (Current Direction)
 
 - **Scope focus (v1):** Core GRC + explainability foundation + agent IAM/security + HKMA/MAS regulatory ingestion + virtual 3LOD.

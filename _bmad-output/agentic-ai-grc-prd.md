@@ -271,6 +271,13 @@ ROUTING: 2L Compliance Manager
 - FR-53: Pilot Connectors — v1 shall provide at least two SIEM connectors and one identity/HR connector for ownership and org mapping workflows.
 - FR-54: Regulator Packet Readiness — System shall generate a scoped regulator packet (Explainability Report + Audit Trail Pack) within 2 minutes for standard dataset size.
 
+### SecurePath Integration Additions (Mar 2026, pending schema validation)
+- FR-55: SecurePath Connector (Read-first) — Platform shall ingest SecurePath findings, remediation task updates, and evidence artifacts via API/export into a canonical event model with source IDs and ingestion timestamps.
+- FR-56: SecurePath-to-Cyber Mapping — High/critical SecurePath findings shall map to CyberAlert records and support Incident linkage and risk/control references.
+- FR-57: SecurePath Explainability Trace — SecurePath-derived recommendations/actions shall include source references in DecisionLog and corresponding AuditTrailEntry records to preserve replayability.
+- FR-58: SecurePath Data Quality Controls — Integration shall detect schema/version drift, quarantine malformed records, and emit mapping error telemetry without corrupting core records.
+- FR-59: SecurePath SLA Visibility — Dashboard/reporting shall expose ingest latency, mapping coverage, and unresolved critical findings imported from SecurePath.
+
 ## 7. Non-Functional Requirements
 ### Performance
 - NFR-1: Support at least 10,000 risks, 5,000 controls, and 20,000 issues.
@@ -320,11 +327,13 @@ ROUTING: 2L Compliance Manager
 - Existing policy and standards documents (upload for AI review).
 - **Threat intelligence feeds** (STIX/TAXII, commercial feeds, open-source IOC feeds) for Agentic Cyber Defence.
 - **SIEM / alert sources** (e.g. Splunk, Sentinel, Elastic) for cyber alert ingestion.
+- **SecurePath** data feeds (findings, remediation tasks, evidence artifacts) via API/export (schema validation pending).
 - **Agent identity store** (internal) — agent accounts, credentials, delegation records, session state.
 
 ### Integrations
 - API access for risk, control, issue, and evidence (CRUD + query).
 - SSO and SIEM integration (details to be defined).
+- SecurePath connector via Integration Hub (read-first in initial rollout; optional write-back later).
 
 ## 9. Reporting and Analytics
 - Board-ready narratives (quarterly and on demand).
@@ -383,6 +392,8 @@ All four gates must pass in UAT and pilot readiness review:
 - **Should the Challenge mechanism support anonymous challenges (e.g. whistleblower-style)?**
 - **What regulator packet format(s) should be considered acceptance criteria (e.g., HKMA-first, MAS-first, or dual-pack)?**
 - **What are the exact operational thresholds for SOC/2L approval volume and response latency in pilot accounts?**
+- **Which SecurePath product variant and schema will be authoritative for integration design?**
+- **Is SecurePath integration read-only in v1, or is bi-directional status sync required?**
 
 ## 13. Related Documents
 - [Explainability Framework](../docs/EXPLAINABILITY.md)
@@ -395,6 +406,8 @@ All four gates must pass in UAT and pilot readiness review:
 - [Two-Week Sprint Execution Plan FR-48 to FR-54 (Mar 2026)](planning-artifacts/two-week-sprint-execution-plan-fr48-fr54-2026-03-08.md)
 - [ServiceNow Schema Comparison Workbook (Mar 2026)](planning-artifacts/servicenow-schema-comparison-workbook-2026-03-08.md)
 - [ServiceNow to Evonix Mapping Template (CSV)](../templates/servicenow-to-evonix-mapping-template.csv)
+- [SecurePath Integration Strategy (Mar 2026)](planning-artifacts/securepath-integration-strategy-2026-03-08.md)
+- [SecurePath Integration Backlog Candidates (Mar 2026)](planning-artifacts/securepath-integration-backlog-candidates-2026-03-08.md)
 - [Product Brief](agentic-ai-grc-product-brief.md)
 - [Prisma Schema (data model)](../prisma/schema.prisma)
 - [Prototype (UI visualization)](../netlify-demo/prototype.html)
