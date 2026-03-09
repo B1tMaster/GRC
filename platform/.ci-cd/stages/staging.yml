@@ -1,0 +1,12 @@
+deploy staging:
+  extends: .deploy
+  rules:
+    - if: $CI_COMMIT_BRANCH == "staging"
+  variables:
+    SERVER_IP: '${STAGING_SERVER_IP}'
+    ENV: ${STAGING_ENV_VARS}
+    PROJECT_DIR_PATH: '/apps/secure-path'
+    DOCKER_ENV: ${STAGING_DOCKER_ENV_VARS}
+    ZEROX_ENV: ${STAGING_ZEROX_ENV_VARS}
+    SSH_KEY: ${STAGING_SSH_PRIVATE_KEY}
+    ENVIRONMENT: staging

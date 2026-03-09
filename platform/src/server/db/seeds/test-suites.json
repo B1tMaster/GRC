@@ -1,0 +1,386 @@
+[
+  {
+    "id": 33,
+    "title": "Requirement 12: Support Information Security with Organizational Policies and Programs",
+    "alias": "pci-dss-req-12",
+    "updatedAt": "2025-04-25T10:10:58.168Z",
+    "createdAt": "2025-04-25T10:10:58.168Z",
+    "authoritativeDocument": {
+      "id": 5,
+      "title": "pci dss",
+      "docType": "pci-dss"
+    }
+  },
+  {
+    "id": 32,
+    "title": "Requirement 11: Test Security of Systems and Networks Regularly",
+    "alias": "pci-dss-req-11",
+    "updatedAt": "2025-04-25T10:10:57.544Z",
+    "createdAt": "2025-04-25T10:10:57.544Z",
+    "authoritativeDocument": {
+      "id": 5,
+      "title": "pci dss",
+      "docType": "pci-dss"
+    }
+  },
+  {
+    "id": 31,
+    "title": "Requirement 10: Log and Monitor All Access to System Components and Cardholder Data",
+    "alias": "pci-dss-req-10",
+    "updatedAt": "2025-04-25T09:29:24.452Z",
+    "createdAt": "2025-04-25T09:29:24.451Z",
+    "authoritativeDocument": {
+      "id": 5,
+      "title": "pci dss",
+      "docType": "pci-dss"
+    }
+  },
+  {
+    "id": 30,
+    "title": "Requirement 9: Restrict Physical Access to Cardholder Data",
+    "alias": "pci-dss-req-9",
+    "updatedAt": "2025-04-25T07:41:35.859Z",
+    "createdAt": "2025-04-25T07:41:35.859Z",
+    "authoritativeDocument": {
+      "id": 5,
+      "title": "pci dss",
+      "docType": "pci-dss"
+    }
+  },
+  {
+    "id": 29,
+    "title": "Requirement 8: Identify Users and Authenticate Access to System Components",
+    "alias": "pci-dss-req-8",
+    "updatedAt": "2025-04-25T07:41:35.259Z",
+    "createdAt": "2025-04-25T07:41:35.259Z",
+    "authoritativeDocument": {
+      "id": 5,
+      "title": "pci dss",
+      "docType": "pci-dss"
+    }
+  },
+  {
+    "id": 28,
+    "title": "Requirement 7: Restrict Access to System Components and Cardholder Data by Business Need to Know",
+    "alias": "pci-dss-req-7",
+    "updatedAt": "2025-04-25T07:41:34.977Z",
+    "createdAt": "2025-04-25T07:41:34.973Z",
+    "authoritativeDocument": {
+      "id": 5,
+      "title": "pci dss",
+      "docType": "pci-dss"
+    }
+  },
+  {
+    "id": 27,
+    "title": "Requirement 6: Develop and Maintain Secure Systems and Software",
+    "alias": "pci-dss-req-6",
+    "updatedAt": "2025-04-24T14:53:08.743Z",
+    "createdAt": "2025-04-24T14:53:08.743Z",
+    "authoritativeDocument": {
+      "id": 5,
+      "title": "pci dss",
+      "docType": "pci-dss"
+    }
+  },
+  {
+    "id": 26,
+    "title": "Requirement 5: Protect All Systems and Networks from Malicious Software",
+    "alias": "pci-dss-req-5",
+    "updatedAt": "2025-04-24T14:53:08.416Z",
+    "createdAt": "2025-04-24T14:53:08.415Z",
+    "authoritativeDocument": {
+      "id": 5,
+      "title": "pci dss",
+      "docType": "pci-dss"
+    }
+  },
+  {
+    "id": 25,
+    "title": "Requirement 4: Protect Cardholder Data with Strong Cryptography During Transmission Over Open, Public Networks",
+    "alias": "pci-dss-req-4",
+    "updatedAt": "2025-04-24T14:27:52.676Z",
+    "createdAt": "2025-04-24T14:27:52.676Z",
+    "authoritativeDocument": {
+      "id": 5,
+      "title": "pci dss",
+      "docType": "pci-dss"
+    }
+  },
+  {
+    "id": 24,
+    "title": "Requirement 3: Protect Stored Account Data",
+    "alias": "pci-dss-req-3",
+    "updatedAt": "2025-04-24T14:27:52.074Z",
+    "createdAt": "2025-04-24T14:27:52.074Z",
+    "authoritativeDocument": {
+      "id": 5,
+      "title": "pci dss",
+      "docType": "pci-dss"
+    }
+  },
+  {
+    "id": 23,
+    "title": "Requirement 2: Apply Secure Configurations to All System Components",
+    "alias": "pci-dss-req-2",
+    "updatedAt": "2025-04-24T10:07:24.298Z",
+    "createdAt": "2025-04-24T10:07:24.297Z",
+    "authoritativeDocument": {
+      "id": 5,
+      "title": "pci dss",
+      "docType": "pci-dss"
+    }
+  },
+  {
+    "id": 22,
+    "title": "Requirement 1: Install and Maintain Network Security Controls",
+    "alias": "pci-dss-req-1",
+    "updatedAt": "2025-04-22T14:34:59.972Z",
+    "createdAt": "2025-04-22T14:34:59.971Z",
+    "authoritativeDocument": {
+      "id": 5,
+      "title": "pci dss",
+      "docType": "pci-dss"
+    }
+  },
+  {
+    "id": 20,
+    "title": "SUPPLY CHAIN RISK MANAGEMENT",
+    "alias": "nist-sr",
+    "updatedAt": "2025-04-08T09:03:57.949Z",
+    "createdAt": "2025-04-08T09:03:57.949Z",
+    "authoritativeDocument": {
+      "id": 4,
+      "title": "nist",
+      "docType": "nist"
+    }
+  },
+  {
+    "id": 19,
+    "title": "SYSTEM AND INFORMATION INTEGRITY",
+    "alias": "nist-si",
+    "updatedAt": "2025-04-08T08:58:11.917Z",
+    "createdAt": "2025-04-08T08:58:11.917Z",
+    "authoritativeDocument": {
+      "id": 4,
+      "title": "nist",
+      "docType": "nist"
+    }
+  },
+  {
+    "id": 18,
+    "title": "SYSTEM AND COMMUNICATIONS PROTECTION",
+    "alias": "nist-sc",
+    "updatedAt": "2025-04-08T08:41:02.182Z",
+    "createdAt": "2025-04-08T08:41:02.182Z",
+    "authoritativeDocument": {
+      "id": 4,
+      "title": "nist",
+      "docType": "nist"
+    }
+  },
+  {
+    "id": 17,
+    "title": "SYSTEM AND SERVICES ACQUISITION",
+    "alias": "nist-sa",
+    "updatedAt": "2025-04-08T08:34:56.318Z",
+    "createdAt": "2025-04-08T08:34:56.318Z",
+    "authoritativeDocument": {
+      "id": 4,
+      "title": "nist",
+      "docType": "nist"
+    }
+  },
+  {
+    "id": 16,
+    "title": "RISK ASSESSMENT",
+    "alias": "nist-ra",
+    "updatedAt": "2025-04-08T08:33:05.017Z",
+    "createdAt": "2025-04-08T08:33:05.017Z",
+    "authoritativeDocument": {
+      "id": 4,
+      "title": "nist",
+      "docType": "nist"
+    }
+  },
+  {
+    "id": 15,
+    "title": "PERSONALLY IDENTIFIABLE INFORMATION PROCESSING AND TRANSPARENCY",
+    "alias": "nist-pt",
+    "updatedAt": "2025-04-08T08:31:15.800Z",
+    "createdAt": "2025-04-08T08:31:15.800Z",
+    "authoritativeDocument": {
+      "id": 4,
+      "title": "nist",
+      "docType": "nist"
+    }
+  },
+  {
+    "id": 14,
+    "title": "PERSONNEL SECURITY",
+    "alias": "nist-ps",
+    "updatedAt": "2025-04-08T08:29:32.851Z",
+    "createdAt": "2025-04-08T08:29:32.850Z",
+    "authoritativeDocument": {
+      "id": 4,
+      "title": "nist",
+      "docType": "nist"
+    }
+  },
+  {
+    "id": 13,
+    "title": "PROGRAM MANAGEMENT",
+    "alias": "nist-pm",
+    "updatedAt": "2025-04-07T16:23:41.853Z",
+    "createdAt": "2025-04-07T16:23:41.852Z",
+    "authoritativeDocument": {
+      "id": 4,
+      "title": "nist",
+      "docType": "nist"
+    }
+  },
+  {
+    "id": 12,
+    "title": "PLANNING",
+    "alias": "nist-pl",
+    "updatedAt": "2025-04-07T16:21:44.185Z",
+    "createdAt": "2025-04-07T16:21:44.185Z",
+    "authoritativeDocument": {
+      "id": 4,
+      "title": "nist",
+      "docType": "nist"
+    }
+  },
+  {
+    "id": 11,
+    "title": "PHYSICAL AND ENVIRONMENTAL PROTECTION",
+    "alias": "nist-pe",
+    "updatedAt": "2025-04-07T16:17:19.347Z",
+    "createdAt": "2025-04-07T16:17:19.347Z",
+    "authoritativeDocument": {
+      "id": 4,
+      "title": "nist",
+      "docType": "nist"
+    }
+  },
+  {
+    "id": 10,
+    "title": "MEDIA PROTECTION",
+    "alias": "nist-mp",
+    "updatedAt": "2025-04-07T16:15:58.544Z",
+    "createdAt": "2025-04-07T16:15:58.544Z",
+    "authoritativeDocument": {
+      "id": 4,
+      "title": "nist",
+      "docType": "nist"
+    }
+  },
+  {
+    "id": 9,
+    "title": "MAINTENANCE",
+    "alias": "nist-ma",
+    "updatedAt": "2025-04-07T16:15:34.571Z",
+    "createdAt": "2025-04-07T16:15:34.571Z",
+    "authoritativeDocument": {
+      "id": 4,
+      "title": "nist",
+      "docType": "nist"
+    }
+  },
+  {
+    "id": 8,
+    "title": "INCIDENT RESPONSE",
+    "alias": "nist-ir",
+    "updatedAt": "2025-04-07T16:14:02.498Z",
+    "createdAt": "2025-04-07T16:14:02.498Z",
+    "authoritativeDocument": {
+      "id": 4,
+      "title": "nist",
+      "docType": "nist"
+    }
+  },
+  {
+    "id": 7,
+    "title": "IDENTIFICATION AND AUTHENTICATION",
+    "alias": "nist-ia",
+    "updatedAt": "2025-04-07T15:43:59.369Z",
+    "createdAt": "2025-04-07T15:43:59.369Z",
+    "authoritativeDocument": {
+      "id": 4,
+      "title": "nist",
+      "docType": "nist"
+    }
+  },
+  {
+    "id": 6,
+    "title": "CONTINGENCY PLANNING",
+    "alias": "nist-cp",
+    "updatedAt": "2025-04-07T15:41:37.583Z",
+    "createdAt": "2025-04-07T15:41:37.583Z",
+    "authoritativeDocument": {
+      "id": 4,
+      "title": "nist",
+      "docType": "nist"
+    }
+  },
+  {
+    "id": 5,
+    "title": "CONFIGURATION MANAGEMENT",
+    "alias": "nist-cm",
+    "updatedAt": "2025-04-07T15:38:57.376Z",
+    "createdAt": "2025-04-07T15:38:57.375Z",
+    "authoritativeDocument": {
+      "id": 4,
+      "title": "nist",
+      "docType": "nist"
+    }
+  },
+  {
+    "id": 4,
+    "title": "ASSESSMENT, AUTHORIZATION, AND MONITORING",
+    "alias": "nist-ca",
+    "updatedAt": "2025-04-07T15:37:30.130Z",
+    "createdAt": "2025-04-07T15:37:30.130Z",
+    "authoritativeDocument": {
+      "id": 4,
+      "title": "nist",
+      "docType": "nist"
+    }
+  },
+  {
+    "id": 3,
+    "title": "AUDIT AND ACCOUNTABILITY",
+    "alias": "nist-au",
+    "updatedAt": "2025-04-07T15:34:02.904Z",
+    "createdAt": "2025-04-07T15:34:02.904Z",
+    "authoritativeDocument": {
+      "id": 4,
+      "title": "nist",
+      "docType": "nist"
+    }
+  },
+  {
+    "id": 2,
+    "title": "AWARENESS AND TRAINING",
+    "alias": "nist-at",
+    "updatedAt": "2025-04-07T15:32:52.126Z",
+    "createdAt": "2025-04-07T15:32:52.125Z",
+    "authoritativeDocument": {
+      "id": 4,
+      "title": "nist",
+      "docType": "nist"
+    }
+  },
+  {
+    "id": 1,
+    "title": "ACCESS CONTROL",
+    "alias": "nist-ac",
+    "updatedAt": "2025-04-07T12:57:10.262Z",
+    "createdAt": "2025-04-07T12:57:10.261Z",
+    "authoritativeDocument": {
+      "id": 4,
+      "title": "nist",
+      "docType": "nist"
+    }
+  }
+]

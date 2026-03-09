@@ -1,0 +1,144 @@
+x-logging: &logging
+  logging:
+    driver: json-file
+    options:
+      max-size: 10M
+      max-file: 3
+
+services:
+  app:
+    <<: *logging
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '${APP_PORT:-3002}:3000'
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
+    restart: unless-stopped
+
+  input-parser:
+    <<: *logging
+    build:
+      context: ./zerox-service
+      dockerfile: Dockerfile
+    ports:
+      - '${INPUT_PARSER_PORT:-3001}:3000'
+    env_file:
+      - .env.zerox
+
+  db:
+    <<: *logging
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${DB_NAME:-my_database}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgrespassword}
+    ports:
+      - '${POSTGRES_PORT}:5432'
+    volumes:
+      - ${POSTGRES_DATA_PATH:-./postgres_data}:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-postgres} -d ${DB_NAME:-my_database}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  observability:
+    <<: *logging
+    image: langfuse/langfuse:2
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - '${LANGFUSE_PORT:-2999}:3000'
+    environment:
+      - DATABASE_URL=${LANGFUSE_DATABASE_URL}
+      - NEXTAUTH_SECRET=${LANGFUSE_NEXTUAUTH_SECRET}
+      - SALT=${LANGFUSE_SALT}
+      - ENCRYPTION_KEY=${LANGFUSE_ENCRYPTION_KEY} # generate via `openssl rand -hex 32`
+      - NEXTAUTH_URL=${LANGFUSE_NEXTAUTH_URL}
+      - TELEMETRY_ENABLED=${TELEMETRY_ENABLED:-false}
+      - LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES=${LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES:-false}
+      - LANGFUSE_INIT_ORG_ID=${LANGFUSE_INIT_ORG_ID:-}
+      - LANGFUSE_INIT_ORG_NAME=${LANGFUSE_INIT_ORG_NAME:-}
+      - LANGFUSE_INIT_PROJECT_ID=${LANGFUSE_INIT_PROJECT_ID:-}
+      - LANGFUSE_INIT_PROJECT_NAME=${LANGFUSE_INIT_PROJECT_NAME:-}
+      - LANGFUSE_INIT_PROJECT_PUBLIC_KEY=${LANGFUSE_INIT_PROJECT_PUBLIC_KEY:-}
+      - LANGFUSE_INIT_PROJECT_SECRET_KEY=${LANGFUSE_INIT_PROJECT_SECRET_KEY:-}
+      - LANGFUSE_INIT_USER_EMAIL=${LANGFUSE_INIT_USER_EMAIL:-}
+      - LANGFUSE_INIT_USER_NAME=${LANGFUSE_INIT_USER_NAME:-}
+      - LANGFUSE_INIT_USER_PASSWORD=${LANGFUSE_INIT_USER_PASSWORD:-}
+      - LANGFUSE_S3_EVENT_UPLOAD_BUCKET=${LANGFUSE_S3_EVENT_UPLOAD_BUCKET:-}
+      - LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT=${LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT:-}
+      - LANGFUSE_S3_EVENT_UPLOAD_PREFIX=${LANGFUSE_S3_EVENT_UPLOAD_PREFIX:-}
+      - LANGFUSE_S3_EVENT_UPLOAD_REGION=${LANGFUSE_S3_EVENT_UPLOAD_REGION:-}
+      - LANGFUSE_S3_EVENT_UPLOAD_ENDPOINT=${LANGFUSE_S3_EVENT_UPLOAD_ENDPOINT:-}
+      - LANGFUSE_S3_EVENT_UPLOAD_ACCESS_KEY_ID=${LANGFUSE_S3_EVENT_UPLOAD_ACCESS_KEY_ID:-}
+      - LANGFUSE_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY=${LANGFUSE_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY:-}
+      - LANGFUSE_S3_EVENT_UPLOAD_FORCE_PATH_STYLE=${LANGFUSE_S3_EVENT_UPLOAD_FORCE_PATH_STYLE:-}
+
+  cache:
+    <<: *logging
+    image: redis:7-alpine
+    ports:
+      - '${REDIS_PORT:-6379}:6379'
+    volumes:
+      - ${REDIS_DATA_PATH:-./redis_data}:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    environment:
+      - TZ=UTC
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+  storage:
+    <<: *logging
+    image: minio/minio:latest
+    ports:
+      - '${MINIO_API_PORT:-9000}:9000'
+      - '${MINIO_CONSOLE_PORT:-9001}:9001'
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+      MINIO_ADDRESS: ':9000'
+      MINIO_CONSOLE_ADDRESS: ':9001'
+    volumes:
+      - ${MINIO_DATA_PATH:-./minio_data}:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ['CMD', 'mc', 'ready', 'local']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  storage-setup:
+    <<: *logging
+    image: minio/mc
+    depends_on:
+      storage:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      sleep 10;
+      mc config host add storage http://storage:9000 ${MINIO_ROOT_USER:-minioadmin} ${MINIO_ROOT_PASSWORD:-minioadmin};
+      mc mb storage/${MINIO_DEFAULT_BUCKET:-default-bucket};
+      exit 0;
+      "

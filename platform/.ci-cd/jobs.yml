@@ -1,0 +1,26 @@
+.deploy:
+  stage: deploy
+  image: alpine
+  script:
+    - apk update && apk upgrade
+    - apk add openssh bash rsync
+    - mkdir "${HOME}/.ssh"
+    - echo -e "Host server\n  User ubuntu\n  Port 4102\n  HostName ${SERVER_IP}\n  IdentityFile ${HOME}/.ssh/id_rsa" >> "${HOME}/.ssh/config"
+    - ssh-keyscan -p 4102 -H ${SERVER_IP} >> "${HOME}/.ssh/known_hosts"
+    - echo "${SSH_KEY}" > "${HOME}/.ssh/id_rsa"
+    - chmod 700 "${HOME}/.ssh/id_rsa"
+    - cat "${HOME}/.ssh/config"
+    - echo "${ENV}" > ".env"
+    - echo "${DOCKER_ENV}" > ".env.docker"
+    - echo "${ZEROX_ENV}" > ".env.zerox"
+    - rsync -az --exclude ./.git --chmod=755 --delete . server:${PROJECT_DIR_PATH}
+    - ssh server "bash -c \"
+      set -e;
+      cd ${PROJECT_DIR_PATH};
+      make services-start;
+      make app-build;
+      make ci-start;
+      \""
+
+include:
+  - /.ci-cd/stages/staging.yml

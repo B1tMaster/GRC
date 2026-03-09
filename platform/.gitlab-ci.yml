@@ -1,0 +1,6 @@
+stages:
+  - build
+  - deploy
+
+include:
+  - /.ci-cd/jobs.yml

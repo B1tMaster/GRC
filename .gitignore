@@ -11,14 +11,28 @@ env/
 .idea/
 *.swp
 *.swo
+.cursor/
 
 # Build / output
 dist/
 build/
 generated/
 *.log
+.next/
+
+# Environment
 .env
 .env.local
+.env.docker
+
+# Platform
+platform/temp/
+platform/.next/
+platform/node_modules/
+
+# Zerox service
+platform/zerox-service/.venv/
+platform/zerox-service/__pycache__/
 
 # Optional
 *.bak

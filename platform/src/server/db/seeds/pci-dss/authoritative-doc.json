@@ -1,0 +1,11 @@
+{
+  "id": 5,
+  "title": "pci dss",
+  "docType": "pci-dss",
+  "s3Url": "http://localhost:9000/authoritative-documents/PCI-DSS-v4_0_1.pdf",
+  "s3Key": "authoritative-documents/PCI-DSS-v4_0_1.pdf",
+  "ingestStatus": "success",
+  "tableOfContents": "Requirement 1: Install and Maintain Network Security Controls, page 42\nRequirement 2: Apply Secure Configurations to All System Components, page 65\nRequirement 3: Protect Stored Account Data, page 78\nRequirement 4: Protect Cardholder Data with Strong Cryptography During Transmission Over Open, Public Networks, page 114\nRequirement 5: Protect All Systems and Networks from Malicious Software, page 123\nRequirement 6: Develop and Maintain Secure Systems and Software, page 138\nRequirement 7: Restrict Access to System Components and Cardholder Data by Business Need to Know, page 165\nRequirement 8: Identify Users and Authenticate Access to System Components, page 178\nRequirement 9: Restrict Physical Access to Cardholder Data, page 214\nRequirement 10: Log and Monitor All Access to System Components and Cardholder Data, page 240\nRequirement 11: Test Security of Systems and Networks Regularly, page 264\nRequirement 12: Support Information Security with Organizational Policies and Programs, page 294",
+  "updatedAt": "2025-04-25T10:10:59.041Z",
+  "createdAt": "2025-04-21T13:47:31.895Z"
+}

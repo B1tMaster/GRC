@@ -1,0 +1,55 @@
+name: ${APP_NAME}
+
+networks:
+  internal:
+    driver: bridge
+
+services:
+  app:
+    extends:
+      file: base.compose.yaml
+      service: app
+    networks:
+      - internal
+
+  input-parser:
+    extends:
+      file: base.compose.yaml
+      service: input-parser
+    networks:
+      - internal
+
+  db:
+    extends:
+      file: base.compose.yaml
+      service: db
+    networks:
+      - internal
+
+  observability:
+    extends:
+      file: base.compose.yaml
+      service: observability
+    networks:
+      - internal
+
+  cache:
+    extends:
+      file: base.compose.yaml
+      service: cache
+    networks:
+      - internal
+
+  storage:
+    extends:
+      file: base.compose.yaml
+      service: storage
+    networks:
+      - internal
+
+  storage-setup:
+    extends:
+      file: base.compose.yaml
+      service: storage-setup
+    networks:
+      - internal
