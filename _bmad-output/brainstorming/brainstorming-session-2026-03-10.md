@@ -1,5 +1,5 @@
 ---
-stepsCompleted: [1, 2]
+stepsCompleted: [1, 2, 3]
 inputDocuments:
   - "/Users/user/Downloads/IT Risk and Control Introduction Slides (2).pdf"
   - "_bmad-output/agentic-ai-grc-product-brief.md"
@@ -11,8 +11,8 @@ session_topic: "Analyzing ServiceNow IRM architecture to inform and refine Evoni
 session_goals: "Extract SNOW IRM patterns, identify Evonix differentiation opportunities, generate feature ideas, cross-reference against existing PRD/backlog"
 selected_approach: 'user-selected'
 techniques_used: ['SCAMPER']
-ideas_generated: 36
-scamper_progress: 'Completed S, C, A, M, P — paused before E (Eliminate)'
+ideas_generated: 47
+scamper_progress: 'COMPLETE — all 7 lenses (S, C, A, M, P, E, R) executed'
 context_file: '_bmad/bmm/data/project-context-template.md'
 ---
 
@@ -280,11 +280,79 @@ _Novelty_: ESG governance unified into the same architecture as cyber, operation
 
 ---
 
-## Session Progress (Paused)
+---
 
-**SCAMPER Progress:** Completed S, C, A, M, P — paused before E (Eliminate) and R (Reverse)
-**Ideas Generated:** 36
-**Resume Point:** Continue with E (Eliminate) — explore what to strip away from SNOW's model to make Evonix leaner and more powerful. Then R (Reverse). Then move to idea organisation.
+### E — Eliminate (5 ideas)
+
+**[E1] Eliminate the Blank Sheet Risk Assessment (revised from "Eliminate Manual Risk Rating")**
+_Concept_: Don't eliminate human risk rating — eliminate the painful starting point. Instead of an empty likelihood × impact matrix, the agent presents evidence-backed suggested ratings with confidence scores. The human still owns the rating and signs off. If they override the agent's suggestion, the override is logged with rationale — giving regulators better evidence of human oversight than a blank matrix ever did.
+_Novelty_: Current GRC: human guesses, then looks for evidence. Evonix: agent presents evidence, human makes informed judgment. Stronger accountability trail for regulators.
+
+_Key insight from Mark: Eliminating manual risk rating entirely is too sensitive for regulators. Accountability for risk judgments must remain with humans. The value is eliminating the blank sheet, not the human judgment._
+
+**[E2] Eliminate Manual GRC Platform Configuration**
+_Concept_: Instead of weeks of manual setup, agents bootstrap the platform from existing artefacts. Upload policy documents → agent extracts policies/standards. Upload risk register spreadsheet → agent ingests and maps to governance chain. Connect CMDB → agent proposes entity types. Connect SIEM → agent starts detecting patterns. Time-to-value drops from weeks to days.
+_Novelty_: SNOW requires extensive admin configuration. Evonix agents do the setup and humans validate — turning implementation from a project into a conversation.
+
+**[E3] Eliminate Manual Framework Mapping**
+_Concept_: As agents build the governance chain (A5), framework mapping happens automatically as a byproduct. When 1L articulates a risk and control in process language, the 2L agent (A8) immediately maps to relevant frameworks. When frameworks update, agents re-map and flag changes. No human ever sits down to "do framework mapping."
+_Novelty_: Framework mapping is a multi-million-dollar consulting industry. Evonix eliminates it as a discrete activity.
+
+**[E4] Eliminate GRC Jargon from 1L User Experience**
+_Concept_: Strip all GRC-specific terminology from the 1L interface. 1L users see: "Your services," "What could go wrong," "What you're doing about it," "Evidence that it's working." The governance chain translates business language into GRC structure behind the scenes. 2L and 3L still see formal terminology.
+_Novelty_: Every GRC tool forces operational teams to learn GRC language. Evonix speaks business language to 1L. Adoption friction drops dramatically.
+
+**[E5] Eliminate Static Annual Audit Planning**
+_Concept_: Instead of 3L building a static annual audit plan, agents continuously compute "audit-readiness scores" for every entity — factoring in time since last audit, risk movement, control changes, contradiction signals, regulatory events. 3L sees a dynamically prioritised audit pipeline. 3L still decides what to audit — but prioritisation is evidence-driven and always current.
+_Novelty_: Annual audit planning is a ritual based on last year's risk picture. Evonix gives 3L a continuously updated, evidence-driven audit pipeline.
+
+---
+
+### R — Reverse (6 ideas)
+
+**[R1] Reverse the Human-Technology Relationship — System of Intelligence, Not System of Record**
+_Concept_: Flip the foundational GRC assumption. SNOW is a system of record that humans populate. Evonix is a system of intelligence that agents populate and humans govern. The default state isn't "empty until a human fills it in" — it's "continuously generating intelligence that humans validate, challenge, and direct." Every output has explainability. Every human intervention is logged.
+_Novelty_: This isn't a feature — it's a category redefinition. The human role shifts from data entry to governance.
+
+**[R2] Reverse the Risk Discovery Sequence — Monitor → Discover → Define**
+_Concept_: Instead of Define → Control → Monitor, reverse to Monitor → Discover → Define. Agents monitor data sources before anyone has defined a single risk. Patterns emerge. Anomalies surface. The risk is discovered from evidence, not invented in a workshop. Discovered risks enter at Process Language level and agents build the governance chain upward.
+_Novelty_: Every GRC tool assumes you know your risks. Evonix discovers risks you didn't know you had.
+
+**[R3] Reverse the Compliance-Security Relationship — Security Informs Compliance**
+_Concept_: Instead of frameworks driving security posture, actual security posture informs compliance status. Cyber agents assess real detection capability against MITRE techniques. Compliance becomes a view on security reality: "Your detection covers 73% of relevant techniques — this maps to these ISO controls as Effective/Partial/Ineffective."
+_Novelty_: SNOW: comply and assume you're secure. Evonix: measure security and show what it means for compliance.
+
+**[R4] Reverse Reporting Flow — Strategic Intent Down, Reality Up**
+_Concept_: Add top-down intent propagation alongside bottom-up reporting. Board declares risk appetite → agents trace downward through governance chain → report: "Board says operational disruption appetite is Low, but actual incident rate implies Medium residual risk. Gap: 23%." The board sees whether intent is being realised.
+_Novelty_: SNOW reports upward: "here's what happened." Evonix also reports downward: "here's whether what you wanted is actually happening."
+
+**[R5] Reverse the Cost Centre Assumption — GRC as Value Generator**
+_Concept_: Agents track and quantify value created: person-hours saved, potential findings prevented, preparation time reduced, consulting costs eliminated. The CFO dashboard shows ROI of the GRC platform itself with hard numbers.
+_Novelty_: GRC tools justify cost by saying "risk reduction." Evonix proves value with measurable numbers.
+
+**[R6] Reverse the Implementation Model — Value on Day One**
+_Concept_: Deliver intelligence on day one. Connect a data source → agents analyse immediately. Before any configuration is complete, the platform surfaces insights: risk patterns detected, contradictions with existing register, framework gaps identified. Value first, structure later.
+_Novelty_: Traditional GRC: months of setup, then value. Evonix: value immediately, then progressive structure.
+
+---
+
+## SCAMPER Complete — Session Summary
+
+| Letter | Ideas | Highlights |
+|--------|------:|-----------|
+| S (Substitute) | 7 | Multi-source entity fabric, framework-validated approach |
+| C (Combine) | 8 | 3LOD + monitoring, agent-augmented audit, bidirectional policy chain |
+| A (Adapt) | 11 | Governance traceability chain, 2L as framework authority, maturity-aware recommendations |
+| M (Modify) | 5 | Dual-cadence governance, multi-resolution risk views |
+| P (Put) | 5 | One architecture six domains, AI governance, ESG |
+| E (Eliminate) | 5 | Blank sheet elimination, GRC jargon removal, auto framework mapping |
+| R (Reverse) | 6 | System of intelligence, monitor-first risk discovery, value on day one |
+| **TOTAL** | **47** | |
+
+## Session Progress (Paused — Break)
+
+**SCAMPER:** COMPLETE — all 7 lenses executed, 47 ideas generated
+**Resume Point:** Return from break. Options: try another technique for fresh ideas, go deeper on specific concepts, or move to idea organisation (prioritise and structure into actionable outcomes).
 
 ### Key Breakthroughs So Far
 
@@ -294,3 +362,6 @@ _Novelty_: ESG governance unified into the same architecture as cyber, operation
 4. **Multi-source entity fabric with cross-source contradiction detection** (S1-S7) — Backed by NIST CA-7, ISO 27001 5.7, MITRE ATT&CK, COBIT APO12.
 5. **Dual-cadence governance** (M2) — Continuous + periodic with agent bridging. Regulators get their RCSA; teams get real-time intelligence.
 6. **One architecture, six domains** (P1-P5) — Same governance pattern applied to operational GRC, strategic execution, AI governance, third-party risk, regulatory change, and ESG.
+7. **System of intelligence, not system of record** (R1) — Category redefinition: agents generate intelligence, humans govern. Human role shifts from data entry to governance.
+8. **Monitor → Discover → Define** (R2) — Reverse the risk discovery sequence so risks are discovered from evidence, not invented in workshops.
+9. **Value on day one** (R6) — Reverse the implementation model so Evonix delivers intelligence before configuration is complete.
