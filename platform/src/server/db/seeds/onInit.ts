@@ -3,7 +3,7 @@ import { readFile } from 'fs/promises'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import * as fs from 'fs'
-import { COBIT_2019_CONTROLS, COSO_ERM_CONTROLS } from '@/server/handlers/grc-extraction/framework-catalog'
+import { COBIT_2019_CONTROLS, COSO_ERM_CONTROLS, NIST_800_53_CONTROLS, ISO_27001_CONTROLS, HKMA_SPM_CONTROLS, PCI_DSS_CONTROLS } from '@/server/handlers/grc-extraction/framework-catalog'
 
 // Define interfaces for the seed data structures (from JSON files)
 interface SeedTestCase {
@@ -463,6 +463,78 @@ async function seedFrameworks(payload: Payload): Promise<void> {
       },
     })
     console.log('Seeded COSO ERM framework')
+
+    await payload.create({
+      collection: 'frameworks',
+      data: {
+        name: 'NIST SP 800-53 r5',
+        code: 'NIST_800_53',
+        version: 'Revision 5',
+        description: 'Security and Privacy Controls for Information Systems and Organizations — the most comprehensive catalog of security controls from NIST.',
+        controls: NIST_800_53_CONTROLS.map((c) => ({
+          controlId: c.controlId,
+          controlName: c.controlName,
+          domain: c.domain,
+          description: c.description,
+          keywords: c.keywords,
+        })),
+      },
+    })
+    console.log('Seeded NIST 800-53 r5 framework')
+
+    await payload.create({
+      collection: 'frameworks',
+      data: {
+        name: 'ISO/IEC 27001:2022',
+        code: 'ISO27001',
+        version: '2022',
+        description: 'Information security management systems — Requirements. The international standard for information security management.',
+        controls: ISO_27001_CONTROLS.map((c) => ({
+          controlId: c.controlId,
+          controlName: c.controlName,
+          domain: c.domain,
+          description: c.description,
+          keywords: c.keywords,
+        })),
+      },
+    })
+    console.log('Seeded ISO 27001 framework')
+
+    await payload.create({
+      collection: 'frameworks',
+      data: {
+        name: 'HKMA Supervisory Policy Manual',
+        code: 'HKMA_SPM',
+        version: '2026',
+        description: 'Hong Kong Monetary Authority Supervisory Policy Manual — technology risk management, operational resilience, and GenAI governance guidance for authorized institutions.',
+        controls: HKMA_SPM_CONTROLS.map((c) => ({
+          controlId: c.controlId,
+          controlName: c.controlName,
+          domain: c.domain,
+          description: c.description,
+          keywords: c.keywords,
+        })),
+      },
+    })
+    console.log('Seeded HKMA SPM framework')
+
+    await payload.create({
+      collection: 'frameworks',
+      data: {
+        name: 'PCI DSS v4.0',
+        code: 'PCI_DSS',
+        version: '4.0',
+        description: 'Payment Card Industry Data Security Standard — requirements for organizations that store, process, or transmit cardholder data.',
+        controls: PCI_DSS_CONTROLS.map((c) => ({
+          controlId: c.controlId,
+          controlName: c.controlName,
+          domain: c.domain,
+          description: c.description,
+          keywords: c.keywords,
+        })),
+      },
+    })
+    console.log('Seeded PCI DSS v4.0 framework')
 
     console.log('GRC framework seeding completed!')
   } catch (error) {

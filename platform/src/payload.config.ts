@@ -74,6 +74,11 @@ import {
   extractPolicyObjectivesOutputSchema,
 } from '@/server/jobs/tasks/extract-policy-objectives'
 import {
+  researchPolicyFrameworksHandler,
+  researchPolicyFrameworksInputSchema,
+  researchPolicyFrameworksOutputSchema,
+} from '@/server/jobs/tasks/research-policy-frameworks'
+import {
   processGrcExtractionWorkflow,
   processGrcExtractionInputSchema,
 } from '@/server/jobs/workflows/process-grc-extraction'
@@ -233,6 +238,14 @@ export default buildConfig({
         label: 'Extract Policy Objectives',
         inputSchema: extractPolicyObjectivesInputSchema,
         outputSchema: extractPolicyObjectivesOutputSchema,
+        retries: 2,
+      },
+      {
+        slug: 'research-policy-frameworks',
+        handler: researchPolicyFrameworksHandler,
+        label: 'Research Policy Frameworks',
+        inputSchema: researchPolicyFrameworksInputSchema,
+        outputSchema: researchPolicyFrameworksOutputSchema,
         retries: 2,
       },
     ],

@@ -17,8 +17,11 @@ export type FrameworkType =
   | 'COSO_ERM'
   | 'ISO27001'
   | 'NIST_CSF'
+  | 'NIST_800_53'
   | 'HKMA'
-  | 'MAS';
+  | 'HKMA_SPM'
+  | 'MAS'
+  | 'PCI_DSS';
 
 export type ExtractionDifficulty = 'easy' | 'moderate' | 'hard';
 

@@ -152,6 +152,12 @@ export const extractPolicyObjectivesHandler: TaskHandler<'extract-policy-objecti
 
     payload.logger.info(`Extracted ${objectives.length} policy objectives from ${policyDocs.length} docs for run ${runId}`)
 
+    await payload.jobs.queue({
+      task: 'research-policy-frameworks',
+      input: { runId: String(runId) },
+    })
+    payload.logger.info(`Queued framework research for run ${runId}`)
+
     return {
       output: {
         success: true,

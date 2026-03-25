@@ -1,6 +1,6 @@
 /**
  * Framework Catalog
- * Reference data for COBIT 2019 and COSO ERM frameworks
+ * Reference data for COBIT 2019, COSO ERM, NIST 800-53, ISO 27001, HKMA SPM, and PCI DSS
  */
 
 import type { FrameworkControl, FrameworkType } from './types';
@@ -429,9 +429,87 @@ export const COSO_ERM_CONTROLS: FrameworkControl[] = [
   }
 ];
 
+export const NIST_800_53_CONTROLS: FrameworkControl[] = [
+  // Access Control family
+  { id: 'nist-ac-1', framework: 'NIST_800_53', domain: 'Access Control', controlId: 'AC-1', controlName: 'Policy and Procedures', description: 'Develop, document, and disseminate access control policy and procedures.', keywords: ['access control', 'policy', 'procedures', 'authorization'] },
+  { id: 'nist-ac-2', framework: 'NIST_800_53', domain: 'Access Control', controlId: 'AC-2', controlName: 'Account Management', description: 'Manage system accounts including establishing, activating, modifying, reviewing, disabling, and removing accounts.', keywords: ['account', 'management', 'provisioning', 'access', 'user', 'identity'] },
+  { id: 'nist-ac-3', framework: 'NIST_800_53', domain: 'Access Control', controlId: 'AC-3', controlName: 'Access Enforcement', description: 'Enforce approved authorizations for logical access to information and system resources.', keywords: ['access', 'enforcement', 'authorization', 'least privilege', 'permissions'] },
+  { id: 'nist-ac-6', framework: 'NIST_800_53', domain: 'Access Control', controlId: 'AC-6', controlName: 'Least Privilege', description: 'Employ the principle of least privilege allowing only authorized accesses.', keywords: ['least privilege', 'minimal access', 'role-based', 'need-to-know'] },
+  { id: 'nist-ac-17', framework: 'NIST_800_53', domain: 'Access Control', controlId: 'AC-17', controlName: 'Remote Access', description: 'Establish and document usage restrictions and implementation guidance for remote access.', keywords: ['remote access', 'VPN', 'telework', 'zero trust'] },
+  // System and Communications Protection (Encryption)
+  { id: 'nist-sc-8', framework: 'NIST_800_53', domain: 'System & Communications Protection', controlId: 'SC-8', controlName: 'Transmission Confidentiality and Integrity', description: 'Protect the confidentiality and integrity of transmitted information.', keywords: ['encryption', 'transmission', 'TLS', 'confidentiality', 'integrity', 'transit'] },
+  { id: 'nist-sc-12', framework: 'NIST_800_53', domain: 'System & Communications Protection', controlId: 'SC-12', controlName: 'Cryptographic Key Establishment and Management', description: 'Establish and manage cryptographic keys using approved key management technology.', keywords: ['key management', 'cryptographic', 'PKI', 'certificate', 'key lifecycle'] },
+  { id: 'nist-sc-13', framework: 'NIST_800_53', domain: 'System & Communications Protection', controlId: 'SC-13', controlName: 'Cryptographic Protection', description: 'Implement cryptographic mechanisms to prevent unauthorized disclosure and modification.', keywords: ['encryption', 'cryptography', 'FIPS 140', 'AES', 'cryptographic module'] },
+  { id: 'nist-sc-28', framework: 'NIST_800_53', domain: 'System & Communications Protection', controlId: 'SC-28', controlName: 'Protection of Information at Rest', description: 'Protect the confidentiality and integrity of information at rest.', keywords: ['encryption at rest', 'data protection', 'storage', 'confidentiality'] },
+  // Configuration Management (Change Mgmt)
+  { id: 'nist-cm-1', framework: 'NIST_800_53', domain: 'Configuration Management', controlId: 'CM-1', controlName: 'Policy and Procedures', description: 'Develop, document, and disseminate configuration management policy and procedures.', keywords: ['configuration', 'change management', 'policy', 'baseline'] },
+  { id: 'nist-cm-3', framework: 'NIST_800_53', domain: 'Configuration Management', controlId: 'CM-3', controlName: 'Configuration Change Control', description: 'Determine and document types of changes to the system under configuration control.', keywords: ['change control', 'configuration', 'approval', 'testing', 'documentation'] },
+  // Incident Response
+  { id: 'nist-ir-1', framework: 'NIST_800_53', domain: 'Incident Response', controlId: 'IR-1', controlName: 'Policy and Procedures', description: 'Develop, document, and disseminate incident response policy and procedures.', keywords: ['incident response', 'policy', 'procedures', 'breach'] },
+  { id: 'nist-ir-4', framework: 'NIST_800_53', domain: 'Incident Response', controlId: 'IR-4', controlName: 'Incident Handling', description: 'Implement an incident handling capability that includes preparation, detection, analysis, containment, eradication, and recovery.', keywords: ['incident handling', 'containment', 'eradication', 'recovery', 'CSIRT'] },
+  { id: 'nist-ir-6', framework: 'NIST_800_53', domain: 'Incident Response', controlId: 'IR-6', controlName: 'Incident Reporting', description: 'Require personnel to report suspected incidents to the organizational incident response capability.', keywords: ['incident reporting', 'notification', 'escalation', 'regulatory reporting'] },
+  // Program Management (AI Governance — mapped via PM family)
+  { id: 'nist-pm-9', framework: 'NIST_800_53', domain: 'Program Management', controlId: 'PM-9', controlName: 'Risk Management Strategy', description: 'Develop a comprehensive strategy to manage risk to organizational operations, assets, individuals, and other organizations.', keywords: ['risk management', 'strategy', 'enterprise risk', 'risk framework'] },
+  { id: 'nist-pt-1', framework: 'NIST_800_53', domain: 'PII Processing & Transparency', controlId: 'PT-1', controlName: 'Policy and Procedures', description: 'Develop, document, and disseminate PII processing and transparency policy.', keywords: ['privacy', 'PII', 'transparency', 'data protection', 'AI', 'explainability'] },
+];
+
+export const ISO_27001_CONTROLS: FrameworkControl[] = [
+  // A.5 — Information Security Policies
+  { id: 'iso-a5', framework: 'ISO27001', domain: 'Information Security Policies', controlId: 'A.5', controlName: 'Information Security Policies', description: 'Management direction for information security in accordance with business requirements and relevant laws and regulations.', keywords: ['policy', 'management direction', 'information security', 'governance'] },
+  // A.6 — Organization of Information Security
+  { id: 'iso-a6', framework: 'ISO27001', domain: 'Organization of IS', controlId: 'A.6', controlName: 'Organization of Information Security', description: 'Establish a management framework to initiate and control the implementation of information security.', keywords: ['organization', 'roles', 'responsibilities', 'segregation of duties', 'mobile', 'teleworking'] },
+  // A.8 — Asset Management
+  { id: 'iso-a8', framework: 'ISO27001', domain: 'Asset Management', controlId: 'A.8', controlName: 'Asset Management', description: 'Identify organizational assets and define appropriate protection responsibilities.', keywords: ['asset management', 'classification', 'handling', 'media', 'inventory'] },
+  // A.9 — Access Control
+  { id: 'iso-a9-1', framework: 'ISO27001', domain: 'Access Control', controlId: 'A.9.1', controlName: 'Business Requirements of Access Control', description: 'Limit access to information and information processing facilities.', keywords: ['access control', 'business requirements', 'access policy', 'network'] },
+  { id: 'iso-a9-2', framework: 'ISO27001', domain: 'Access Control', controlId: 'A.9.2', controlName: 'User Access Management', description: 'Ensure authorized user access and prevent unauthorized access to systems and services.', keywords: ['user access', 'registration', 'provisioning', 'privilege management', 'authentication'] },
+  { id: 'iso-a9-4', framework: 'ISO27001', domain: 'Access Control', controlId: 'A.9.4', controlName: 'System and Application Access Control', description: 'Prevent unauthorized access to systems and applications.', keywords: ['system access', 'application access', 'login', 'password', 'MFA'] },
+  // A.10 — Cryptography
+  { id: 'iso-a10', framework: 'ISO27001', domain: 'Cryptography', controlId: 'A.10', controlName: 'Cryptography', description: 'Ensure proper and effective use of cryptography to protect the confidentiality, authenticity and integrity of information.', keywords: ['cryptography', 'encryption', 'key management', 'certificates', 'FIPS'] },
+  // A.12 — Operations Security
+  { id: 'iso-a12-1', framework: 'ISO27001', domain: 'Operations Security', controlId: 'A.12.1.2', controlName: 'Change Management', description: 'Changes to the organization, business processes, information processing facilities and systems that affect information security shall be controlled.', keywords: ['change management', 'operations', 'change control', 'testing'] },
+  // A.16 — Incident Management
+  { id: 'iso-a16-1', framework: 'ISO27001', domain: 'Incident Management', controlId: 'A.16.1', controlName: 'Management of Information Security Incidents', description: 'Ensure a consistent and effective approach to the management of information security incidents, including communication.', keywords: ['incident management', 'incident response', 'reporting', 'evidence', 'lessons learned'] },
+  // A.18 — Compliance
+  { id: 'iso-a18', framework: 'ISO27001', domain: 'Compliance', controlId: 'A.18', controlName: 'Compliance', description: 'Avoid breaches of legal, statutory, regulatory or contractual obligations related to information security.', keywords: ['compliance', 'legal', 'regulatory', 'audit', 'privacy', 'data protection'] },
+];
+
+export const HKMA_SPM_CONTROLS: FrameworkControl[] = [
+  { id: 'hkma-tm-g-1', framework: 'HKMA_SPM', domain: 'Technology Risk Management', controlId: 'TM-G-1', controlName: 'IT Governance', description: 'Board and senior management oversight of IT strategy, policies and risk management framework.', keywords: ['IT governance', 'board oversight', 'technology risk', 'strategy'] },
+  { id: 'hkma-tm-e-1', framework: 'HKMA_SPM', domain: 'Technology Risk Management', controlId: 'TM-E-1', controlName: 'Information Security', description: 'Establish information security management framework including classification, access control, and encryption.', keywords: ['information security', 'classification', 'access control', 'encryption', 'security framework'] },
+  { id: 'hkma-or-2', framework: 'HKMA_SPM', domain: 'Operational Resilience', controlId: 'OR-2', controlName: 'Operational Resilience Framework', description: 'Establish and maintain an operational resilience framework including identification of critical operations and impact tolerances.', keywords: ['operational resilience', 'business continuity', 'critical operations', 'impact tolerance'] },
+  { id: 'hkma-sa-1', framework: 'HKMA_SPM', domain: 'Supervisory Approach', controlId: 'SA-1', controlName: 'Risk-Based Supervisory Approach', description: 'Supervisory policies and procedures reflecting risk-based approach to banking supervision including technology risk.', keywords: ['risk-based', 'supervision', 'regulatory', 'banking', 'compliance'] },
+  { id: 'hkma-genai-1', framework: 'HKMA_SPM', domain: 'GenAI Governance', controlId: 'GenAI-1', controlName: 'GenAI Risk Management', description: 'Governance framework for adoption and use of generative AI including model risk management, data governance, and ethical use.', keywords: ['AI', 'GenAI', 'generative AI', 'model risk', 'explainability', 'ethical AI', 'AI governance'] },
+  { id: 'hkma-genai-2', framework: 'HKMA_SPM', domain: 'GenAI Governance', controlId: 'GenAI-2', controlName: 'AI Explainability and Fairness', description: 'Ensure AI/ML models are explainable, fair, and free from bias with appropriate human oversight.', keywords: ['explainability', 'fairness', 'bias', 'transparency', 'human oversight', 'AI ethics'] },
+  { id: 'hkma-tm-e-4', framework: 'HKMA_SPM', domain: 'Technology Risk Management', controlId: 'TM-E-4', controlName: 'Cyber Security', description: 'Implement cyber security management framework including threat intelligence, vulnerability management, and incident response.', keywords: ['cyber security', 'threat intelligence', 'vulnerability', 'penetration testing', 'SOC'] },
+  { id: 'hkma-ic-1', framework: 'HKMA_SPM', domain: 'Internal Controls', controlId: 'IC-1', controlName: 'Internal Control Framework', description: 'Establish an internal control framework appropriate to the nature, size, and complexity of the institution.', keywords: ['internal controls', 'control environment', 'three lines', 'assurance', 'audit'] },
+];
+
+export const PCI_DSS_CONTROLS: FrameworkControl[] = [
+  // Requirement 3 — Protect Stored Account Data
+  { id: 'pci-req3', framework: 'PCI_DSS', domain: 'Protect Stored Data', controlId: 'Req 3', controlName: 'Protect Stored Account Data', description: 'Protect stored account data through encryption, truncation, masking, and hashing.', keywords: ['data protection', 'encryption at rest', 'stored data', 'masking', 'tokenization'] },
+  { id: 'pci-req3-5', framework: 'PCI_DSS', domain: 'Protect Stored Data', controlId: 'Req 3.5', controlName: 'Protect Cryptographic Keys', description: 'Protect cryptographic keys used to protect stored account data against disclosure and misuse.', keywords: ['key management', 'key protection', 'HSM', 'key custodian', 'split knowledge'] },
+  // Requirement 4 — Protect Data in Transit
+  { id: 'pci-req4', framework: 'PCI_DSS', domain: 'Protect Data in Transit', controlId: 'Req 4', controlName: 'Protect Cardholder Data in Transit', description: 'Protect cardholder data with strong cryptography during transmission over open, public networks.', keywords: ['encryption in transit', 'TLS', 'transmission', 'network security', 'cryptography'] },
+  // Requirement 6 — Develop Secure Systems
+  { id: 'pci-req6-5', framework: 'PCI_DSS', domain: 'Secure Development', controlId: 'Req 6.5', controlName: 'Change Management Procedures', description: 'Follow change management procedures for all changes to system components.', keywords: ['change management', 'change control', 'software development', 'testing', 'approval'] },
+  // Requirement 7/8 — Access Control
+  { id: 'pci-req7', framework: 'PCI_DSS', domain: 'Access Control', controlId: 'Req 7', controlName: 'Restrict Access by Business Need to Know', description: 'Restrict access to system components and cardholder data to only those individuals whose job requires such access.', keywords: ['access control', 'need to know', 'least privilege', 'role-based', 'authorization'] },
+  { id: 'pci-req8', framework: 'PCI_DSS', domain: 'Access Control', controlId: 'Req 8', controlName: 'Identify Users and Authenticate Access', description: 'Identify and authenticate access to system components using unique IDs and strong authentication.', keywords: ['authentication', 'MFA', 'identity', 'unique ID', 'password', 'multi-factor'] },
+  // Requirement 10 — Logging and Monitoring
+  { id: 'pci-req10', framework: 'PCI_DSS', domain: 'Logging & Monitoring', controlId: 'Req 10', controlName: 'Log and Monitor All Access', description: 'Log and monitor all access to network resources and cardholder data.', keywords: ['logging', 'monitoring', 'audit trail', 'SIEM', 'alerting'] },
+  // Requirement 12 — Information Security Policy
+  { id: 'pci-req12', framework: 'PCI_DSS', domain: 'Security Policy', controlId: 'Req 12', controlName: 'Information Security Policy', description: 'Maintain a policy that addresses information security for all personnel.', keywords: ['security policy', 'information security', 'personnel', 'awareness', 'training'] },
+  { id: 'pci-req12-10', framework: 'PCI_DSS', domain: 'Incident Response', controlId: 'Req 12.10', controlName: 'Incident Response Plan', description: 'Implement an incident response plan. Be prepared to respond immediately to a system breach.', keywords: ['incident response', 'breach', 'forensics', 'notification', 'recovery plan'] },
+];
+
 export const ALL_FRAMEWORK_CONTROLS: FrameworkControl[] = [
   ...COBIT_2019_CONTROLS,
-  ...COSO_ERM_CONTROLS
+  ...COSO_ERM_CONTROLS,
+  ...NIST_800_53_CONTROLS,
+  ...ISO_27001_CONTROLS,
+  ...HKMA_SPM_CONTROLS,
+  ...PCI_DSS_CONTROLS,
 ];
 
 export function getControlsByFramework(framework: FrameworkType): FrameworkControl[] {
