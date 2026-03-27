@@ -2,6 +2,10 @@
   command = "npm install && npx slidev build --base /"
   publish = "dist"
 
+[build.environment]
+  NODE_VERSION = "22"
+  PNPM_VERSION = "9.15.9"
+
 [[headers]]
   for = "/*"
   [headers.values]
