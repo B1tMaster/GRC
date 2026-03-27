@@ -60,14 +60,14 @@ transition: fade
 <div class="text-left">
 <div class="mb-3"><span class="ev-pill teal">Co-Founder</span></div>
 <h1 class="!text-4xl !font-700 !mb-2 !text-left">Mark Syed</h1>
-<p class="!text-sm !text-[#94a3b8] !mb-5 !leading-relaxed !text-left">20+ years cyber and information security, technology risk across Europe and Asia. Specialist at defining, implementing and automating tech risk frameworks.</p>
-<div class="space-y-3">
-<div class="flex items-start gap-3"><div class="w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0" style="background: #38bdf8;"></div><p class="!text-sm !text-left !mb-0"><span style="color: #e2e8f0; font-weight: 500;">Deep Technical Risk</span> <span style="color: #64748b;">— Government, finance, security &amp; consulting sectors</span></p></div>
-<div class="flex items-start gap-3"><div class="w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0" style="background: #a855f7;"></div><p class="!text-sm !text-left !mb-0"><span style="color: #e2e8f0; font-weight: 500;">Builder Background</span> <span style="color: #64748b;">— Ex coder, business analyst, architect &amp; consultant</span></p></div>
-<div class="flex items-start gap-3"><div class="w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0" style="background: #34d399;"></div><p class="!text-sm !text-left !mb-0"><span style="color: #e2e8f0; font-weight: 500;">Design Thinking</span> <span style="color: #64748b;">— Human-centric perspectives to technology, operational &amp; cyber risk</span></p></div>
-<div class="flex items-start gap-3"><div class="w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0" style="background: #22d3ee;"></div><p class="!text-sm !text-left !mb-0"><span style="color: #e2e8f0; font-weight: 500;">AI Governance &amp; Risk</span> <span style="color: #64748b;">— IAPP AI Governance Professional, CRISC certified</span></p></div>
+<p class="!text-sm !text-[#94a3b8] !mb-5 !leading-relaxed !text-left" style="max-width: 420px;">20+ years cyber and information security, technology risk across Europe and Asia. Specialist at defining, implementing and automating tech risk frameworks.</p>
+<div style="display: flex; flex-direction: column; gap: 10px; max-width: 420px;">
+<div style="display: flex; align-items: baseline; gap: 10px;"><span style="color: #38bdf8; flex-shrink: 0;">→</span><p class="!text-sm !text-left !mb-0"><span style="color: #e2e8f0; font-weight: 500;">Deep Technical Risk</span> <span style="color: #64748b;">— Government, finance, security &amp; consulting</span></p></div>
+<div style="display: flex; align-items: baseline; gap: 10px;"><span style="color: #a855f7; flex-shrink: 0;">→</span><p class="!text-sm !text-left !mb-0"><span style="color: #e2e8f0; font-weight: 500;">Builder Background</span> <span style="color: #64748b;">— Ex coder, analyst, architect &amp; consultant</span></p></div>
+<div style="display: flex; align-items: baseline; gap: 10px;"><span style="color: #34d399; flex-shrink: 0;">→</span><p class="!text-sm !text-left !mb-0"><span style="color: #e2e8f0; font-weight: 500;">Design Thinking</span> <span style="color: #64748b;">— Human-centric approach to cyber &amp; operational risk</span></p></div>
+<div style="display: flex; align-items: baseline; gap: 10px;"><span style="color: #22d3ee; flex-shrink: 0;">→</span><p class="!text-sm !text-left !mb-0"><span style="color: #e2e8f0; font-weight: 500;">AI Governance &amp; Risk</span> <span style="color: #64748b;">— IAPP AI Governance Professional, CRISC</span></p></div>
 </div>
-<p class="!text-xs !text-[#64748b] !text-left mt-5">Based in Hong Kong · Building Evonix to bring governed, explainable AI to GRC operations</p>
+<p class="!text-xs !text-[#64748b] !text-left mt-5" style="max-width: 420px;">Based in Hong Kong · Building Evonix to bring governed, explainable AI to GRC operations</p>
 </div>
 </div>
 </div>
