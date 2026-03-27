@@ -54,12 +54,11 @@ transition: fade
 </div>
 <div class="flex gap-2 mt-2">
 <span class="ev-pill blue" style="font-size: 0.65rem;">CRISC</span>
-<span class="ev-pill purple" style="font-size: 0.65rem;">AIGP</span>
 <span class="ev-pill green" style="font-size: 0.65rem;">ISACA</span>
 </div>
 </div>
 <div class="text-left">
-<div class="mb-3"><span class="ev-pill teal">Founder</span></div>
+<div class="mb-3"><span class="ev-pill teal">Co-Founder</span></div>
 <h1 class="!text-4xl !font-700 !mb-2 !text-left">Mark Syed</h1>
 <p class="!text-sm !text-[#94a3b8] !mb-5 !leading-relaxed !text-left">20+ years cyber and information security, technology risk across Europe and Asia. Specialist at defining, implementing and automating tech risk frameworks.</p>
 <div class="space-y-3">
