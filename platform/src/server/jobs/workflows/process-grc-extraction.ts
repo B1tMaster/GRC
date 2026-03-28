@@ -110,7 +110,23 @@ export const processGrcExtractionWorkflow = {
 
       trace.update({ output: { step: 'derive-and-map', totalControls, totalMappings } })
 
-      // Step 5: Mark document as complete
+      // Step 5: Analyze policy gaps against framework requirements
+      const gapResult = await tasks['analyze-policy-gaps'](`analyze-gaps-${docId}`, {
+        input: { docId, collectionSlug, traceId },
+      })
+
+      const gapsCreated = gapResult?.output?.gapsCreated ?? 0
+      trace.update({ output: { step: 'gap-analysis', gapsCreated } })
+
+      // Step 6: Draft policies for identified gaps
+      const draftResult = await tasks['draft-policy'](`draft-policy-${docId}`, {
+        input: { docId, collectionSlug, traceId },
+      })
+
+      const draftsCreated = draftResult?.output?.draftsCreated ?? 0
+      trace.update({ output: { step: 'policy-drafting', draftsCreated } })
+
+      // Step 7: Mark document as complete
       await payload.update({
         collection: collectionSlug as any,
         id: docId,
@@ -130,6 +146,8 @@ export const processGrcExtractionWorkflow = {
             statementsCreated,
             controlsCreated: totalControls,
             frameworkMappings: totalMappings,
+            gapsIdentified: gapsCreated,
+            policyDrafts: draftsCreated,
           },
         },
       })
@@ -141,13 +159,15 @@ export const processGrcExtractionWorkflow = {
           statementsCreated,
           totalControls,
           totalMappings,
+          gapsCreated,
+          draftsCreated,
         },
       })
 
       payload.logger.info(
         `GRC extraction complete for ${collectionSlug}/${docId}: ` +
         `${objectivesCreated} objectives, ${statementsCreated} risk statements, ` +
-        `${totalControls} controls, ${totalMappings} mappings`
+        `${totalControls} controls, ${totalMappings} mappings, ${gapsCreated} gaps, ${draftsCreated} drafts`
       )
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error)

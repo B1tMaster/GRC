@@ -156,9 +156,13 @@ async def parse_input(
         stats = os.stat(file_path)
         logger.info(f"Parsing file: {file_path}, size: {stats.st_size}, select_pages: {select_pages}, schema: {schema is not None}")
 
-        # Debug OpenAI setup
-        if not os.environ.get("OPENAI_API_KEY"):
-            raise ValueError("OPENAI_API_KEY is not set in environment")
+        has_key = (
+            os.environ.get("OPENAI_API_KEY")
+            or os.environ.get("DEEPSEEK_API_KEY")
+            or os.environ.get("GEMINI_API_KEY")
+        )
+        if not has_key:
+            raise ValueError("No LLM API key set (OPENAI_API_KEY, DEEPSEEK_API_KEY, or GEMINI_API_KEY)")
         
         # Set a higher recursion limit
         original_limit = sys.getrecursionlimit()

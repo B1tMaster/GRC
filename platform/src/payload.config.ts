@@ -22,6 +22,10 @@ import { GovernanceObjectivesCollection } from '@/collections/GovernanceObjectiv
 import { ControlObjectivesCollection } from '@/collections/ControlObjectives/collection'
 import { RiskAppetiteStatementsCollection } from '@/collections/RiskAppetiteStatements/collection'
 import { DecisionLogsCollection } from '@/collections/DecisionLogs/collection'
+import { PolicyGapAnalysesCollection } from '@/collections/PolicyGapAnalyses/collection'
+import { PolicyDraftsCollection } from '@/collections/PolicyDrafts/collection'
+import { PipelineRunsCollection } from '@/collections/PipelineRuns/collection'
+import { ChallengesCollection } from '@/collections/Challenges/collection'
 import { AuditTrailEntriesCollection } from '@/collections/AuditTrailEntries/collection'
 import { PolicyAgentRunsCollection } from '@/collections/PolicyAgentRuns/collection'
 import { PolicyDocumentsCollection } from '@/collections/PolicyDocuments/collection'
@@ -79,6 +83,16 @@ import {
   researchPolicyFrameworksOutputSchema,
 } from '@/server/jobs/tasks/research-policy-frameworks'
 import {
+  analyzePolicyGapsHandler,
+  analyzePolicyGapsInputSchema,
+  analyzePolicyGapsOutputSchema,
+} from '@/server/jobs/tasks/analyze-policy-gaps'
+import {
+  draftPolicyHandler,
+  draftPolicyInputSchema,
+  draftPolicyOutputSchema,
+} from '@/server/jobs/tasks/draft-policy'
+import {
   processGrcExtractionWorkflow,
   processGrcExtractionInputSchema,
 } from '@/server/jobs/workflows/process-grc-extraction'
@@ -111,6 +125,10 @@ export default buildConfig({
     AuditTrailEntriesCollection,
     PolicyAgentRunsCollection,
     PolicyDocumentsCollection,
+    PolicyGapAnalysesCollection,
+    PolicyDraftsCollection,
+    PipelineRunsCollection,
+    ChallengesCollection,
   ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
@@ -246,6 +264,22 @@ export default buildConfig({
         label: 'Research Policy Frameworks',
         inputSchema: researchPolicyFrameworksInputSchema,
         outputSchema: researchPolicyFrameworksOutputSchema,
+        retries: 2,
+      },
+      {
+        slug: 'analyze-policy-gaps',
+        handler: analyzePolicyGapsHandler,
+        label: 'Analyze Policy Gaps',
+        inputSchema: analyzePolicyGapsInputSchema,
+        outputSchema: analyzePolicyGapsOutputSchema,
+        retries: 2,
+      },
+      {
+        slug: 'draft-policy',
+        handler: draftPolicyHandler,
+        label: 'Draft Policy from Gap',
+        inputSchema: draftPolicyInputSchema,
+        outputSchema: draftPolicyOutputSchema,
         retries: 2,
       },
     ],

@@ -1,0 +1,73 @@
+import configPromise from '@payload-config'
+import { getPayload } from 'payload'
+import { handlePreflight } from '@/lib/cors'
+
+export const OPTIONS = handlePreflight
+
+export const GET = async (
+  req: Request,
+  { params }: { params: Promise<{ runId: string }> },
+) => {
+  const { runId } = await params
+
+  try {
+    const payload = await getPayload({ config: configPromise })
+
+    const runs = await payload.find({
+      collection: 'pipeline-runs',
+      where: { runId: { equals: runId } },
+      limit: 1,
+    })
+
+    if (runs.docs.length === 0) {
+      return Response.json({ error: `Run ${runId} not found` }, { status: 404 })
+    }
+
+    const run = runs.docs[0] as any
+
+    const auditEntries = await payload.find({
+      collection: 'audit-trail-entries',
+      where: { traceId: { equals: run.traceId } },
+      sort: 'createdAt',
+      limit: 100,
+    })
+
+    const elapsedMs = run.elapsedMs ?? (
+      run.startedAt
+        ? Date.now() - new Date(run.startedAt).getTime()
+        : 0
+    )
+
+    return Response.json({
+      runId: run.runId,
+      status: run.status,
+      currentStep: run.currentStep,
+      steps: (run.steps || []).map((s: any) => ({
+        name: s.name,
+        label: s.label,
+        status: s.status,
+        startedAt: s.startedAt,
+        completedAt: s.completedAt,
+        output: s.output,
+        error: s.error,
+      })),
+      startedAt: run.startedAt,
+      completedAt: run.completedAt,
+      elapsedMs,
+      error: run.error,
+      results: run.results,
+      auditTrail: auditEntries.docs.map((e: any) => ({
+        id: e.id,
+        eventType: e.eventType,
+        entityType: e.entityType,
+        entityId: e.entityId,
+        actor: e.actor,
+        details: e.details,
+        timestamp: e.createdAt,
+      })),
+    })
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    return Response.json({ error: message }, { status: 500 })
+  }
+}

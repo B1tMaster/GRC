@@ -1186,7 +1186,7 @@
             <thead>
               <tr><th>Policy/Standard</th><th>Gap Identified</th><th>Frameworks Affected</th><th>Priority</th><th>Action</th></tr>
             </thead>
-            <tbody>
+            <tbody id="gap-table-body">
               <tr class="pa-gap-row" data-gap="encryption" style="cursor: pointer; transition: background 0.2s;">
                 <td><strong>Data Encryption Policy v2.1</strong></td>
                 <td>No FIPS 140-3 reference for cryptographic modules</td>
@@ -1222,9 +1222,29 @@
         <!-- Policy Draft + Rationale (hidden until a gap is selected) -->
         <div id="pa-draft-section" class="grid two" style="display: none; opacity: 0; transition: opacity 0.6s;">
           <div class="card">
-            <h2 id="pa-draft-title">Policy Draft</h2>
-            <div id="pa-draft-content" style="background: var(--panel-2); border-radius: 8px; padding: 12px; font-size: 12px; max-height: 300px; overflow-y: auto;"></div>
-            <div style="margin-top: 12px; display: flex; gap: 8px; align-items: center;">
+            <h2 id="pa-draft-title">Policy Draft: Data Encryption Policy v3.0</h2>
+            <div id="pa-draft-content" style="background: var(--panel-2); border-radius: 8px; padding: 12px; font-size: 12px; max-height: 300px; overflow-y: auto;">
+              <div style="color: var(--green); margin-bottom: 8px;">+ Section 4.2 Cryptographic Module Requirements (NEW)</div>
+              <div style="padding-left: 12px; border-left: 2px solid var(--green); margin-bottom: 12px;">
+                <p>4.2.1 All cryptographic modules used for protecting sensitive data SHALL be validated to FIPS 140-3 Level 2 or higher.</p>
+                <p style="color: var(--muted); font-size: 10px;">📎 Citation: FIPS 140-3 §4.1, NIST SP 800-57 Part 1 §5.2</p>
+              </div>
+              <div style="color: var(--green); margin-bottom: 8px;">+ Section 4.3 Key Management Lifecycle (NEW)</div>
+              <div style="padding-left: 12px; border-left: 2px solid var(--green); margin-bottom: 12px;">
+                <p>4.3.1 Cryptographic keys SHALL follow the lifecycle defined in NIST SP 800-57:</p>
+                <ul style="margin: 4px 0; padding-left: 16px;">
+                  <li>Pre-operational, Operational, Post-operational, Destroyed</li>
+                </ul>
+                <p style="color: var(--muted); font-size: 10px;">📎 Citation: NIST SP 800-57 Part 1 §7, ISO 27001 A.10.1.2</p>
+              </div>
+              <div style="color: var(--blue); margin-bottom: 8px;">~ Section 5.1 Approved Algorithms (MODIFIED)</div>
+              <div style="padding-left: 12px; border-left: 2px solid var(--blue);">
+                <p><span style="text-decoration: line-through; color: var(--red);">AES-256 is required for data at rest.</span></p>
+                <p style="color: var(--green);">AES-256-GCM (FIPS 197 compliant) is required for data at rest. AES-128 is acceptable only for legacy systems with documented exception approval.</p>
+                <p style="color: var(--muted); font-size: 10px;">📎 Citation: FIPS 197, NIST SP 800-38D</p>
+              </div>
+            </div>
+            <div id="draft-confidence" style="margin-top: 12px; display: flex; gap: 8px; align-items: center;">
               <span style="font-size: 11px; color: var(--muted);">Confidence:</span>
               <div style="background: var(--panel-2); border-radius: 4px; height: 8px; width: 100px;">
                 <div id="pa-confidence-bar" style="height: 100%; border-radius: 4px; transition: width 0.5s, background 0.5s;"></div>
@@ -1239,7 +1259,28 @@
           </div>
           <div class="card">
             <h2>Agent Rationale</h2>
-            <div id="pa-rationale-content" style="background: var(--panel-2); border-radius: 8px; padding: 12px; font-size: 12px;"></div>
+            <div id="pa-rationale-content" style="background: var(--panel-2); border-radius: 8px; padding: 12px; font-size: 12px;">
+              <p><strong>Why this revision is needed:</strong></p>
+              <ul style="margin: 8px 0; padding-left: 16px; color: var(--muted);">
+                <li>Board approved "Zero Trust" strategy in Q4 2025 minutes (p. 3)</li>
+                <li>Zero Trust requires FIPS-validated encryption per NIST 800-207</li>
+                <li>Current policy (v2.1) references AES-256 but lacks FIPS validation requirement</li>
+                <li>HKMA GenAI Circular (Jan 2026) requires "industry-standard encryption"</li>
+              </ul>
+              <p><strong>Frameworks mandating this change:</strong></p>
+              <div style="display: flex; flex-wrap: wrap; gap: 4px; margin: 8px 0;">
+                <span class="pill" style="border-color: var(--teal);">FIPS 140-3</span>
+                <span class="pill" style="border-color: var(--blue);">NIST 800-57</span>
+                <span class="pill" style="border-color: var(--blue);">ISO 27001 A.10</span>
+                <span class="pill" style="border-color: var(--orange);">HKMA GenAI</span>
+              </div>
+              <p><strong>Impact on related artifacts:</strong></p>
+              <ul style="margin: 8px 0; padding-left: 16px; color: var(--muted);">
+                <li>Key Management Policy → requires creation</li>
+                <li>IT Security Standard → Section 3.2 needs update</li>
+                <li>Control AC-SC-13 → evidence mapping required</li>
+              </ul>
+            </div>
             <div style="margin-top: 12px;">
               <button class="btn" id="pa-review-sources">Review Sources</button>
               <button class="btn" id="pa-raise-challenge">Raise Challenge</button>
@@ -1599,14 +1640,369 @@
 
     </div>
 
+    <script src="config.js"></script>
     <script>
+      // ─── API Configuration ────────────────────────────────────────────
+      const API_BASE = window.EVONIX_API_BASE || 'http://localhost:3000';
+      const POLL_INTERVAL_MS = 2000;
+
+      // ─── State ────────────────────────────────────────────────────────
+      let currentRunId = null;
+      let pollTimer = null;
+      let lastUploadedDocId = null;
+      let lastCollectionSlug = null;
+
+      // ─── Helpers ──────────────────────────────────────────────────────
+      async function api(path, opts = {}) {
+        const url = `${API_BASE}${path}`;
+        try {
+          const res = await fetch(url, {
+            headers: { 'Content-Type': 'application/json', ...opts.headers },
+            ...opts,
+          });
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({ error: res.statusText }));
+            throw new Error(err.error || `HTTP ${res.status}`);
+          }
+          return res;
+        } catch (e) {
+          if (e.message.includes('Failed to fetch') || e.message.includes('NetworkError')) {
+            throw new Error('API unavailable — check that the platform server is running');
+          }
+          throw e;
+        }
+      }
+
+      function showAlert(container, type, message) {
+        const existing = container.querySelector('.alert.dynamic');
+        if (existing) existing.remove();
+        const el = document.createElement('div');
+        el.className = `alert ${type} dynamic`;
+        el.innerHTML = message;
+        container.prepend(el);
+        if (type === 'success' || type === 'info') {
+          setTimeout(() => el.remove(), 8000);
+        }
+      }
+
+      function priorityColor(p) {
+        return p === 'High' ? 'var(--red)' : p === 'Medium' ? 'var(--orange)' : 'var(--muted)';
+      }
+
+      function confidenceBar(pct) {
+        const color = pct >= 80 ? 'var(--green)' : pct >= 70 ? 'var(--blue)' : 'var(--orange)';
+        return `<div style="display:flex;align-items:center;gap:6px;">
+          <div style="background:var(--panel-2);border-radius:4px;height:8px;width:80px;">
+            <div style="background:${color};width:${pct}%;height:100%;border-radius:4px;"></div>
+          </div>
+          <span style="font-size:11px;color:${color};">${pct}%</span>
+        </div>`;
+      }
+
+      // ─── Upload / Ingest (PSA-01) ─────────────────────────────────────
+      document.getElementById('upload-docs').addEventListener('click', async () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.pdf,.docx,.txt';
+        input.onchange = async (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+          const page = document.getElementById('page-policy-agent');
+          showAlert(page, 'info', `<strong>Uploading:</strong> ${file.name}...`);
+          try {
+            const formData = new FormData();
+            formData.append('file', file);
+            const res = await fetch(`${API_BASE}/api/board-circulars`, {
+              method: 'POST',
+              body: formData,
+            });
+            if (!res.ok) throw new Error(`Upload failed: ${res.statusText}`);
+            const data = await res.json();
+            lastUploadedDocId = data.doc?.id;
+            lastCollectionSlug = 'board-circulars';
+            showAlert(page, 'success', `<strong>Uploaded:</strong> ${file.name} (ID: ${lastUploadedDocId})`);
+          } catch (err) {
+            showAlert(page, 'warning', `<strong>Upload:</strong> Backend not connected. To enable live uploads, deploy the platform and set EVONIX_API_BASE. The demo data below is still fully interactive.`);
+          }
+        };
+        input.click();
+      });
+
+      // ─── Run Policy Agent (PSA-06) ────────────────────────────────────
+      document.getElementById('run-policy-agent').addEventListener('click', async () => {
+        const page = document.getElementById('page-policy-agent');
+
+        if (!lastUploadedDocId) {
+          showAlert(page, 'warning', '<strong>No document loaded.</strong> Please ingest a document first, or enter a document ID.');
+          const docId = prompt('Enter document ID (from Payload) or cancel:');
+          if (!docId) return;
+          lastUploadedDocId = docId;
+          const slug = prompt('Collection slug (board-circulars or annual-reports):', 'board-circulars');
+          lastCollectionSlug = slug || 'board-circulars';
+        }
+
+        showAlert(page, 'info', '<strong>Starting pipeline...</strong>');
+
+        try {
+          const res = await api('/api/policy-agent/run', {
+            method: 'POST',
+            body: JSON.stringify({ docId: lastUploadedDocId, collectionSlug: lastCollectionSlug }),
+          });
+          const data = await res.json();
+          currentRunId = data.runId;
+          showAlert(page, 'success', `<strong>Pipeline started:</strong> Run ID ${currentRunId}`);
+          startPolling(currentRunId);
+        } catch (err) {
+          showAlert(page, 'warning', `<strong>Pipeline:</strong> Backend not connected. Deploy the platform to Railway and update EVONIX_API_BASE to enable live processing. The demo data below shows the expected output.`);
+        }
+      });
+
+      // ─── Polling for Status (PSA-06) ──────────────────────────────────
+      function startPolling(runId) {
+        if (pollTimer) clearInterval(pollTimer);
+
+        const update = async () => {
+          try {
+            const res = await api(`/api/policy-agent/run/${runId}/status`);
+            const data = await res.json();
+            renderPipelineStatus(data);
+            renderAuditTrail(data.auditTrail || []);
+
+            if (data.status === 'completed') {
+              clearInterval(pollTimer);
+              pollTimer = null;
+              await loadResults(runId, data.traceId || runId);
+            } else if (data.status === 'failed') {
+              clearInterval(pollTimer);
+              pollTimer = null;
+              const page = document.getElementById('page-policy-agent');
+              showAlert(page, 'error', `<strong>Pipeline failed:</strong> ${data.error || 'Unknown error'}`);
+            }
+          } catch (err) {
+            console.error('Polling error:', err);
+          }
+        };
+
+        update();
+        pollTimer = setInterval(update, POLL_INTERVAL_MS);
+      }
+
+      function renderPipelineStatus(data) {
+        const container = document.querySelector('#page-policy-agent .card:nth-child(2)');
+        if (!container) return;
+        const pipelineEl = container.querySelector('[style*="display: flex"][style*="overflow-x"]');
+        if (!pipelineEl) return;
+
+        const steps = data.steps || [];
+        pipelineEl.innerHTML = steps.map((step, i) => {
+          let bg, color, suffix;
+          switch (step.status) {
+            case 'complete':
+              bg = 'var(--green)'; color = 'var(--bg)'; suffix = ' ✓'; break;
+            case 'active':
+              bg = 'var(--blue)'; color = 'var(--bg)'; suffix = ' ◐'; break;
+            case 'error':
+              bg = 'var(--red)'; color = 'var(--bg)'; suffix = ' ✗'; break;
+            default:
+              bg = 'var(--panel-2)'; color = 'var(--muted)'; suffix = ''; break;
+          }
+          const anim = step.status === 'active' ? 'animation: pulse 2s infinite;' : '';
+          const arrow = i < steps.length - 1 ? '<div style="color:var(--muted);">→</div>' : '';
+          return `<div style="background:${bg};color:${color};padding:8px 16px;border-radius:8px;font-size:12px;font-weight:500;white-space:nowrap;${anim}">${i + 1}. ${step.label}${suffix}</div>${arrow}`;
+        }).join('');
+
+        if (data.elapsedMs) {
+          const secs = (data.elapsedMs / 1000).toFixed(1);
+          let elapsed = container.querySelector('.elapsed-time');
+          if (!elapsed) {
+            elapsed = document.createElement('div');
+            elapsed.className = 'elapsed-time';
+            elapsed.style.cssText = 'font-size:11px;color:var(--muted);margin-top:8px;text-align:right;';
+            container.appendChild(elapsed);
+          }
+          elapsed.textContent = `Elapsed: ${secs}s`;
+        }
+      }
+
+      // ─── Load Results (PSA-04 / PSA-05) ───────────────────────────────
+      async function loadResults(runId, traceId) {
+        try {
+          const [gapsRes, draftsRes] = await Promise.all([
+            api(`/api/policy-gap-analyses?where[sourceRun][equals]=${traceId}&limit=50`),
+            api(`/api/policy-drafts?where[sourceRun][equals]=${traceId}&limit=50`),
+          ]);
+          const gaps = await gapsRes.json();
+          const drafts = await draftsRes.json();
+
+          renderGapAnalysis(gaps.docs || []);
+          renderPolicyDrafts(drafts.docs || []);
+        } catch (err) {
+          console.error('Error loading results:', err);
+        }
+      }
+
+      function renderGapAnalysis(gaps) {
+        const gapCard = document.querySelector('#page-policy-agent .card:has(h2)');
+        const gapTable = document.getElementById('gap-table-body');
+        if (!gapTable && gaps.length === 0) return;
+
+        if (gapTable) {
+          gapTable.innerHTML = gaps.map(g => `
+            <tr>
+              <td><strong>${g.policyName || 'Unknown'}</strong></td>
+              <td>${g.gapDescription || ''}</td>
+              <td>${(g.frameworksAffected || []).map(f => `${f.frameworkName} ${f.sectionRef}`).join(', ')}</td>
+              <td><span style="color:${priorityColor(g.priority)}">${g.priority}</span></td>
+              <td><button class="btn" style="padding:4px 8px;font-size:10px;">${g.action || 'Review'}</button></td>
+            </tr>
+          `).join('');
+        }
+      }
+
+      function renderPolicyDrafts(drafts) {
+        if (drafts.length === 0) return;
+        const draft = drafts[0];
+        const draftPanel = document.getElementById('draft-content');
+        const rationalePanel = document.getElementById('rationale-content');
+
+        if (draftPanel) {
+          draftPanel.innerHTML = (draft.sections || []).map(s => {
+            const color = s.type === 'added' ? 'var(--green)' : s.type === 'modified' ? 'var(--blue)' : 'var(--red)';
+            const prefix = s.type === 'added' ? '+' : s.type === 'modified' ? '~' : '-';
+            const label = s.type === 'added' ? 'NEW' : s.type === 'modified' ? 'MODIFIED' : 'REMOVED';
+            return `
+              <div style="color:${color};margin-bottom:8px;">${prefix} Section ${s.sectionNumber} ${s.title} (${label})</div>
+              <div style="padding-left:12px;border-left:2px solid ${color};margin-bottom:12px;">
+                ${s.previousContent ? `<p style="text-decoration:line-through;color:var(--red);">${s.previousContent.slice(0, 200)}</p>` : ''}
+                <p>${s.content}</p>
+                ${(s.citations || []).map(c => `<p style="color:var(--muted);font-size:10px;">📎 Citation: ${c.frameworkName} ${c.sectionRef}${c.description ? ' — ' + c.description : ''}</p>`).join('')}
+              </div>`;
+          }).join('');
+        }
+
+        const confEl = document.getElementById('draft-confidence');
+        if (confEl && draft.overallConfidence != null) {
+          const pct = Math.round(draft.overallConfidence * 100);
+          confEl.innerHTML = confidenceBar(pct) + (draft.humanDraftRequired
+            ? '<span style="font-size:11px;color:var(--orange);margin-left:8px;">⚠ Human draft required</span>'
+            : '');
+        }
+
+        if (rationalePanel && draft.rationale) {
+          rationalePanel.innerHTML = `
+            <p><strong>Why this revision is needed:</strong></p>
+            <ul style="margin:8px 0;padding-left:16px;color:var(--muted);">
+              ${(draft.rationale.whyNeeded || []).map(r => `<li>${r}</li>`).join('')}
+            </ul>
+            <p><strong>Frameworks mandating this change:</strong></p>
+            <div style="display:flex;flex-wrap:wrap;gap:4px;margin:8px 0;">
+              ${(draft.rationale.frameworksMandating || []).map(f => `<span class="pill" style="border-color:var(--blue);">${f}</span>`).join('')}
+            </div>
+            <p><strong>Impact on related artifacts:</strong></p>
+            <ul style="margin:8px 0;padding-left:16px;color:var(--muted);">
+              ${(draft.rationale.relatedArtifactImpact || []).map(r => `<li>${r}</li>`).join('')}
+            </ul>`;
+        }
+
+        const approveBtn = document.getElementById('approve-policy');
+        if (approveBtn) {
+          approveBtn.dataset.draftId = draft.id;
+          approveBtn.dataset.confidence = draft.overallConfidence;
+        }
+      }
+
+      // ─── Approve (PSA-07) ─────────────────────────────────────────────
+      document.getElementById('approve-policy')?.addEventListener('click', async function () {
+        const draftId = this.dataset.draftId;
+        if (!draftId) {
+          showAlert(document.getElementById('page-policy-agent'), 'warning', 'No draft available to approve.');
+          return;
+        }
+
+        const page = document.getElementById('page-policy-agent');
+        try {
+          const res = await api(`/api/policy-agent/draft/${draftId}/approve`, {
+            method: 'POST',
+            body: JSON.stringify({ userId: 'demo-user', userName: 'Demo Reviewer' }),
+          });
+          const data = await res.json();
+          showAlert(page, 'success', `<strong>Approved:</strong> ${data.policyName} — status updated to "approved"`);
+        } catch (err) {
+          showAlert(page, 'error', `<strong>Approval Error:</strong> ${err.message}`);
+        }
+      });
+
+      // ─── Challenge (PSA-07) ───────────────────────────────────────────
+      document.querySelectorAll('#page-policy-agent .btn').forEach(btn => {
+        if (btn.textContent.trim() === 'Raise Challenge') {
+          btn.addEventListener('click', async function () {
+            const draftId = document.getElementById('approve-policy')?.dataset?.draftId;
+            if (!draftId) {
+              showAlert(document.getElementById('page-policy-agent'), 'warning', 'No draft available to challenge.');
+              return;
+            }
+            const rationale = prompt('Enter your challenge rationale:');
+            if (!rationale) return;
+
+            const page = document.getElementById('page-policy-agent');
+            try {
+              const res = await api(`/api/policy-agent/draft/${draftId}/challenge`, {
+                method: 'POST',
+                body: JSON.stringify({ userId: 'demo-user', userName: 'Demo Reviewer', rationale }),
+              });
+              const data = await res.json();
+              showAlert(page, 'info', `<strong>Challenge raised:</strong> ${data.challengeId}`);
+            } catch (err) {
+              showAlert(page, 'error', `<strong>Challenge Error:</strong> ${err.message}`);
+            }
+          });
+        }
+      });
+
+      // ─── Audit Trail Rendering (PSA-07) ───────────────────────────────
+      function renderAuditTrail(entries) {
+        const timeline = document.querySelector('#page-policy-agent .timeline');
+        if (!timeline || entries.length === 0) return;
+
+        timeline.innerHTML = entries.map(e => {
+          const color = e.eventType?.includes('completed') ? 'var(--green)'
+            : e.eventType?.includes('failed') ? 'var(--red)'
+            : e.eventType?.includes('started') ? 'var(--blue)'
+            : 'var(--purple)';
+          const label = (e.eventType || '').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+          const ts = e.timestamp ? new Date(e.timestamp).toLocaleTimeString() : '';
+          return `
+            <div class="timeline-item">
+              <div class="timeline-marker" style="background:${color};"></div>
+              <div class="timeline-content">
+                <div class="timeline-title">${label}</div>
+                <div class="timeline-meta">${ts} • ${e.actor?.agentName || e.actor?.type || 'System'}</div>
+                <div style="font-size:11px;color:var(--muted);">${e.entityType || ''} ${e.entityId || ''}</div>
+              </div>
+            </div>`;
+        }).join('');
+      }
+
+      // ─── Export Audit Trail (PSA-07) ──────────────────────────────────
+      document.querySelectorAll('#page-policy-agent .btn').forEach(btn => {
+        if (btn.textContent.trim() === 'Generate Audit Trail Pack' || btn.textContent.trim() === 'Export Audit Trail Pack') {
+          btn.addEventListener('click', async () => {
+            if (!currentRunId) {
+              showAlert(document.getElementById('page-policy-agent'), 'warning', 'No run available for export.');
+              return;
+            }
+            window.open(`${API_BASE}/api/policy-agent/run/${currentRunId}/audit-trail/export`, '_blank');
+          });
+        }
+      });
+
+      // ─── Governance Orchestration Page ────────────────────────────────
       const steps = document.querySelectorAll("#flow-steps .step");
       const themesCard = document.getElementById("themes-card");
       const objectivesCard = document.getElementById("objectives-card");
       const controlsCard = document.getElementById("controls-card");
       const riskCard = document.getElementById("risk-card");
       const explainCard = document.getElementById("explain-card");
-      const evidenceCard = document.getElementById("evidence-card");
 
       const extractBtn = document.getElementById("extract-btn");
       const approveObjectives = document.getElementById("approve-objectives");
@@ -1616,62 +2012,38 @@
 
       function setStep(step) {
         steps.forEach(s => s.classList.remove("active-step"));
-        document.querySelector(`[data-step="${step}"]`).classList.add("active-step");
+        document.querySelector(`[data-step="${step}"]`)?.classList.add("active-step");
       }
 
-      extractBtn.addEventListener("click", () => {
-        themesCard.classList.remove("hidden");
-        setStep("objectives");
-      });
+      extractBtn?.addEventListener("click", () => { themesCard?.classList.remove("hidden"); setStep("objectives"); });
+      approveObjectives?.addEventListener("click", () => { objectivesCard?.classList.add("approved"); setStep("controls"); });
+      approveMapping?.addEventListener("click", () => { controlsCard?.classList.add("approved"); setStep("risk"); });
+      approveRisk?.addEventListener("click", () => { riskCard?.classList.add("approved"); setStep("metrics"); });
+      approveExplain?.addEventListener("click", () => { explainCard?.classList.add("approved"); });
 
-      approveObjectives.addEventListener("click", () => {
-        objectivesCard.classList.add("approved");
-        setStep("controls");
-      });
-
-      approveMapping.addEventListener("click", () => {
-        controlsCard.classList.add("approved");
-        setStep("risk");
-      });
-
-      approveRisk.addEventListener("click", () => {
-        riskCard.classList.add("approved");
-        setStep("metrics");
-      });
-
-      approveExplain.addEventListener("click", () => {
-        explainCard.classList.add("approved");
-      });
-
-      // Page Navigation
+      // ─── Page Navigation ──────────────────────────────────────────────
       document.querySelectorAll('nav .nav-links a').forEach(link => {
         link.addEventListener('click', function() {
           const page = this.dataset.page;
-          // Update nav active state
           document.querySelectorAll('nav .nav-links a').forEach(l => l.classList.remove('active'));
           this.classList.add('active');
-          // Show/hide pages
           document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
-          document.getElementById('page-' + page).classList.add('active');
+          document.getElementById('page-' + page)?.classList.add('active');
         });
       });
 
-      // Accordion functionality
-      document.querySelectorAll('.accordion-header').forEach(header => {
-        header.addEventListener('click', function() {
-          this.parentElement.classList.toggle('open');
-        });
+      // ─── Accordion ────────────────────────────────────────────────────
+      document.querySelectorAll('.accordion-header').forEach(h => {
+        h.addEventListener('click', () => h.parentElement.classList.toggle('open'));
       });
 
-      // Button click feedback
+      // ─── Button / Card Feedback ───────────────────────────────────────
       document.querySelectorAll('.btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
+        btn.addEventListener('click', function() {
           this.style.transform = 'scale(0.98)';
           setTimeout(() => { this.style.transform = ''; }, 100);
         });
       });
-
-      // Clickable card feedback
       document.querySelectorAll('.card.clickable').forEach(card => {
         card.addEventListener('click', function() {
           this.style.transform = 'scale(0.99)';

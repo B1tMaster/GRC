@@ -28,11 +28,11 @@ COPY postcss.config.js .
 COPY tailwind.config.js .
 COPY public public
 COPY src src
-COPY .env .
 
-# Next.js collects completely anonymous telemetry data about general usage.
-# Learn more here: https://nextjs.org/telemetry
-# Uncomment the following line in case you want to disable telemetry during the build.
+# .env is used for local Docker builds; on Railway env vars are injected as build args.
+# The glob ensures the COPY succeeds even when .env is absent (.env.example always matches).
+COPY .env* ./
+
 ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN npm install -g corepack@latest && \

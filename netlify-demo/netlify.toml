@@ -1,0 +1,35 @@
+[build]
+  publish = "."
+  command = "node -e \"const fs=require('fs');const f='config.js';fs.writeFileSync(f,fs.readFileSync(f,'utf8').replace(/__EVONIX_API_BASE__/g,process.env.EVONIX_API_BASE||'http://localhost:3000'))\""
+
+# Clean URL for landing page
+[[redirects]]
+  from = "/landing"
+  to = "/landing.html"
+  status = 200
+
+# Clean URL for prototype
+[[redirects]]
+  from = "/prototype"
+  to = "/prototype.html"
+  status = 200
+
+# Custom headers for all pages
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+# Cache static assets
+[[headers]]
+  for = "*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
