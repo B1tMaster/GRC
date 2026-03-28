@@ -73,6 +73,21 @@ export interface Config {
     'test-cases': TestCase;
     'test-runs': TestRun;
     'input-files': InputFile;
+    frameworks: Framework;
+    'board-circulars': BoardCircular;
+    'annual-reports': AnnualReport;
+    'governance-objectives': GovernanceObjective;
+    'control-objectives': ControlObjective;
+    'risk-appetite-statements': RiskAppetiteStatement;
+    'decision-logs': DecisionLog;
+    'audit-trail-entries': AuditTrailEntry;
+    'policy-agent-runs': PolicyAgentRun;
+    'policy-documents': PolicyDocument;
+    'policy-gap-analyses': PolicyGapAnalysis;
+    'policy-drafts': PolicyDraft;
+    'pipeline-runs': PipelineRun;
+    challenges: Challenge;
+    'payload-kv': PayloadKv;
     'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -85,6 +100,19 @@ export interface Config {
     'test-suites': {
       testCases: 'test-cases';
     };
+    'board-circulars': {
+      governanceObjectives: 'governance-objectives';
+    };
+    'annual-reports': {
+      governanceObjectives: 'governance-objectives';
+      riskAppetiteStatements: 'risk-appetite-statements';
+    };
+    'governance-objectives': {
+      controlObjectives: 'control-objectives';
+    };
+    'policy-agent-runs': {
+      documents: 'policy-documents';
+    };
   };
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
@@ -93,6 +121,21 @@ export interface Config {
     'test-cases': TestCasesSelect<false> | TestCasesSelect<true>;
     'test-runs': TestRunsSelect<false> | TestRunsSelect<true>;
     'input-files': InputFilesSelect<false> | InputFilesSelect<true>;
+    frameworks: FrameworksSelect<false> | FrameworksSelect<true>;
+    'board-circulars': BoardCircularsSelect<false> | BoardCircularsSelect<true>;
+    'annual-reports': AnnualReportsSelect<false> | AnnualReportsSelect<true>;
+    'governance-objectives': GovernanceObjectivesSelect<false> | GovernanceObjectivesSelect<true>;
+    'control-objectives': ControlObjectivesSelect<false> | ControlObjectivesSelect<true>;
+    'risk-appetite-statements': RiskAppetiteStatementsSelect<false> | RiskAppetiteStatementsSelect<true>;
+    'decision-logs': DecisionLogsSelect<false> | DecisionLogsSelect<true>;
+    'audit-trail-entries': AuditTrailEntriesSelect<false> | AuditTrailEntriesSelect<true>;
+    'policy-agent-runs': PolicyAgentRunsSelect<false> | PolicyAgentRunsSelect<true>;
+    'policy-documents': PolicyDocumentsSelect<false> | PolicyDocumentsSelect<true>;
+    'policy-gap-analyses': PolicyGapAnalysesSelect<false> | PolicyGapAnalysesSelect<true>;
+    'policy-drafts': PolicyDraftsSelect<false> | PolicyDraftsSelect<true>;
+    'pipeline-runs': PipelineRunsSelect<false> | PipelineRunsSelect<true>;
+    challenges: ChallengesSelect<false> | ChallengesSelect<true>;
+    'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -101,6 +144,7 @@ export interface Config {
   db: {
     defaultIDType: number;
   };
+  fallbackLocale: null;
   globals: {
     'dev-panel': DevPanel;
   };
@@ -108,13 +152,25 @@ export interface Config {
     'dev-panel': DevPanelSelect<false> | DevPanelSelect<true>;
   };
   locale: null;
-  user: User & {
-    collection: 'users';
+  widgets: {
+    collections: CollectionsWidget;
   };
+  user: User;
   jobs: {
     tasks: {
       'ingest-authoritative-document': TaskIngestAuthoritativeDocument;
       'evaluate-test-case': TaskEvaluateTestCase;
+      'ingest-board-circular': TaskIngestBoardCircular;
+      'ingest-annual-report': TaskIngestAnnualReport;
+      'extract-governance-objectives': TaskExtractGovernanceObjectives;
+      'extract-control-objectives': TaskExtractControlObjectives;
+      'extract-risk-appetite': TaskExtractRiskAppetite;
+      'map-to-framework': TaskMapToFramework;
+      'ingest-policy-document': TaskIngestPolicyDocument;
+      'extract-policy-objectives': TaskExtractPolicyObjectives;
+      'research-policy-frameworks': TaskResearchPolicyFrameworks;
+      'analyze-policy-gaps': TaskAnalyzePolicyGaps;
+      'draft-policy': TaskDraftPolicy;
       inline: {
         input: unknown;
         output: unknown;
@@ -122,6 +178,7 @@ export interface Config {
     };
     workflows: {
       'process-test-run': WorkflowProcessTestRun;
+      'process-grc-extraction': WorkflowProcessGrcExtraction;
     };
   };
 }
@@ -161,7 +218,15 @@ export interface User {
   _verificationToken?: string | null;
   loginAttempts?: number | null;
   lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
   password?: string | null;
+  collection: 'users';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -323,6 +388,664 @@ export interface InputFile {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "frameworks".
+ */
+export interface Framework {
+  id: number;
+  name: string;
+  code: 'COBIT2019' | 'COSO_ERM' | 'ISO27001' | 'NIST_CSF' | 'NIST_800_53' | 'HKMA' | 'HKMA_SPM' | 'MAS' | 'PCI_DSS';
+  version?: string | null;
+  description?: string | null;
+  controls?:
+    | {
+        controlId: string;
+        controlName: string;
+        domain?: string | null;
+        process?: string | null;
+        description?: string | null;
+        /**
+         * Array of keyword strings for mapping
+         */
+        keywords?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "board-circulars".
+ */
+export interface BoardCircular {
+  id: number;
+  title: string;
+  organization?: string | null;
+  publishDate?: string | null;
+  documentType?: ('board_minutes' | 'governance_framework' | 'strategy_document' | 'policy_document' | 'other') | null;
+  s3Key?: string | null;
+  s3Url?: string | null;
+  parsedText?: string | null;
+  extractionStatus?: ('pending' | 'parsing' | 'parsed' | 'extracting' | 'complete' | 'error') | null;
+  errorMessage?: string | null;
+  governanceObjectives?: {
+    docs?: (number | GovernanceObjective)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "governance-objectives".
+ */
+export interface GovernanceObjective {
+  id: number;
+  objectiveId: string;
+  text: string;
+  sourceDocumentType: 'board-circulars' | 'annual-reports';
+  sourceDocument:
+    | {
+        relationTo: 'board-circulars';
+        value: number | BoardCircular;
+      }
+    | {
+        relationTo: 'annual-reports';
+        value: number | AnnualReport;
+      };
+  sourceSection?: string | null;
+  sourceSectionType?:
+    | (
+        | 'board_responsibilities'
+        | 'risk_appetite'
+        | 'matters_reserved'
+        | 'agenda_item'
+        | 'committee_update'
+        | 'strategic_objectives'
+        | 'governance_principles'
+        | 'risk_management'
+        | 'compliance'
+        | 'other'
+      )
+    | null;
+  extractionConfidence?: ('high' | 'medium' | 'low') | null;
+  /**
+   * Extracted governance keywords
+   */
+  keywords?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  reviewStatus?: ('pending' | 'approved' | 'rejected' | 'modified') | null;
+  reviewNotes?: string | null;
+  controlObjectives?: {
+    docs?: (number | ControlObjective)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  frameworkMappings?:
+    | {
+        framework?: (number | null) | Framework;
+        controlId?: string | null;
+        controlName?: string | null;
+        similarityScore?: number | null;
+        confidence?: ('high' | 'medium' | 'low') | null;
+        matchedKeywords?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        rationale?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "annual-reports".
+ */
+export interface AnnualReport {
+  id: number;
+  title: string;
+  organization?: string | null;
+  reportingYear?: number | null;
+  publishDate?: string | null;
+  s3Key?: string | null;
+  s3Url?: string | null;
+  parsedText?: string | null;
+  extractionStatus?: ('pending' | 'parsing' | 'parsed' | 'extracting' | 'complete' | 'error') | null;
+  errorMessage?: string | null;
+  governanceObjectives?: {
+    docs?: (number | GovernanceObjective)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  riskAppetiteStatements?: {
+    docs?: (number | RiskAppetiteStatement)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "risk-appetite-statements".
+ */
+export interface RiskAppetiteStatement {
+  id: number;
+  statementId: string;
+  statement: string;
+  riskCategory?:
+    | ('strategic' | 'operational' | 'financial' | 'compliance' | 'technology' | 'reputational' | 'cyber')
+    | null;
+  appetiteLevel?: ('averse' | 'minimal' | 'cautious' | 'open' | 'hungry') | null;
+  /**
+   * Quantitative or qualitative tolerance boundary
+   */
+  toleranceThreshold?: string | null;
+  sourceDocumentType?: ('board-circulars' | 'annual-reports') | null;
+  sourceDocument?:
+    | ({
+        relationTo: 'board-circulars';
+        value: number | BoardCircular;
+      } | null)
+    | ({
+        relationTo: 'annual-reports';
+        value: number | AnnualReport;
+      } | null);
+  sourceSection?: string | null;
+  extractionConfidence?: ('high' | 'medium' | 'low') | null;
+  linkedGovernanceObjectives?: (number | GovernanceObjective)[] | null;
+  frameworkMappings?:
+    | {
+        framework?: (number | null) | Framework;
+        controlId?: string | null;
+        rationale?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  reviewStatus?: ('pending' | 'approved' | 'rejected' | 'modified') | null;
+  reviewNotes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "control-objectives".
+ */
+export interface ControlObjective {
+  id: number;
+  controlId: string;
+  title: string;
+  description: string;
+  governanceObjective: number | GovernanceObjective;
+  category?: ('preventive' | 'detective' | 'corrective' | 'directive') | null;
+  /**
+   * Role or function responsible for this control
+   */
+  owner?: string | null;
+  frequency?: ('continuous' | 'daily' | 'weekly' | 'monthly' | 'quarterly' | 'annual' | 'event_driven') | null;
+  frameworkReferences?:
+    | {
+        framework?: (number | null) | Framework;
+        controlId?: string | null;
+        controlName?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  extractionConfidence?: ('high' | 'medium' | 'low') | null;
+  reviewStatus?: ('pending' | 'approved' | 'rejected' | 'modified') | null;
+  reviewNotes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "decision-logs".
+ */
+export interface DecisionLog {
+  id: number;
+  traceId: string;
+  action: string;
+  entityType:
+    | 'board-circulars'
+    | 'annual-reports'
+    | 'governance-objectives'
+    | 'control-objectives'
+    | 'risk-appetite-statements'
+    | 'framework-mapping'
+    | 'policy-agent-runs'
+    | 'policy-documents'
+    | 'policy-gap-analysis'
+    | 'policy-draft';
+  entityId: string;
+  agentType?:
+    | (
+        | 'document_parser'
+        | 'objective_extractor'
+        | 'control_deriver'
+        | 'risk_extractor'
+        | 'framework_mapper'
+        | 'gap_analyzer'
+        | 'policy_drafter'
+        | 'human_review'
+        | 'policy_objective_extractor'
+        | 'policy_framework_researcher'
+        | 'policy_gap_analyser'
+        | 'policy_review_router'
+      )
+    | null;
+  /**
+   * Input provided to the agent/decision step
+   */
+  input?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Output produced by the agent/decision step
+   */
+  output?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * LLM reasoning or human justification
+   */
+  reasoning?: string | null;
+  confidence?: number | null;
+  modelUsed?: string | null;
+  tokenUsage?: {
+    input?: number | null;
+    output?: number | null;
+    total?: number | null;
+  };
+  timestamp?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "audit-trail-entries".
+ */
+export interface AuditTrailEntry {
+  id: number;
+  traceId: string;
+  eventType:
+    | 'document_uploaded'
+    | 'document_parsed'
+    | 'objectives_extracted'
+    | 'controls_derived'
+    | 'risk_appetite_extracted'
+    | 'framework_mapped'
+    | 'human_approved'
+    | 'human_rejected'
+    | 'human_modified'
+    | 'extraction_workflow_started'
+    | 'extraction_workflow_completed'
+    | 'extraction_workflow_failed'
+    | 'gap_identified'
+    | 'policy_draft_created'
+    | 'policy_approved'
+    | 'policy_challenge_raised'
+    | 'policy_published'
+    | 'pipeline_run_started'
+    | 'pipeline_run_completed'
+    | 'pipeline_run_failed';
+  entityType: string;
+  entityId: string;
+  actor?: {
+    type?: ('system' | 'user' | 'ai_agent') | null;
+    user?: (number | null) | User;
+    agentName?: string | null;
+  };
+  /**
+   * Event-specific payload
+   */
+  details?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Explainability chain back to source
+   */
+  sourceTrace?: {
+    sourceDocumentCollection?: string | null;
+    sourceDocumentId?: string | null;
+    sourceSection?: string | null;
+    sourceText?: string | null;
+  };
+  timestamp?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "policy-agent-runs".
+ */
+export interface PolicyAgentRun {
+  id: number;
+  title: string;
+  status: 'created' | 'running' | 'completed' | 'error';
+  currentStep?:
+    | (
+        | 'not_started'
+        | 'extract_objectives'
+        | 'research_frameworks'
+        | 'gap_analysis'
+        | 'draft_policies'
+        | 'route_for_review'
+        | 'complete'
+      )
+    | null;
+  stepResults?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  errorMessage?: string | null;
+  startedAt?: string | null;
+  completedAt?: string | null;
+  documents?: {
+    docs?: (number | PolicyDocument)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "policy-documents".
+ */
+export interface PolicyDocument {
+  id: number;
+  title: string;
+  run: number | PolicyAgentRun;
+  category: 'board_document' | 'existing_policy' | 'regulatory_trigger' | 'other';
+  fileType?: string | null;
+  s3Key?: string | null;
+  s3Url?: string | null;
+  hash?: string | null;
+  parsedText?: string | null;
+  ingestStatus?: ('pending' | 'processing' | 'processed' | 'error') | null;
+  errorMessage?: string | null;
+  pageCount?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "policy-gap-analyses".
+ */
+export interface PolicyGapAnalysis {
+  id: number;
+  gapId: string;
+  /**
+   * Name of the affected policy or "Missing: <name>" for absent policies
+   */
+  policyName: string;
+  gapDescription: string;
+  frameworksAffected?:
+    | {
+        frameworkName: string;
+        /**
+         * Specific section or control reference (e.g. "AC-2", "§4.1")
+         */
+        sectionRef: string;
+        id?: string | null;
+      }[]
+    | null;
+  priority: 'High' | 'Medium' | 'Low';
+  action: 'Draft Revision' | 'Draft New';
+  /**
+   * Confidence score (0-1) in this gap identification
+   */
+  confidence?: number | null;
+  /**
+   * Agent rationale for why this gap was identified
+   */
+  reasoning?: string | null;
+  /**
+   * Trace ID of the pipeline run that produced this gap
+   */
+  sourceRun?: string | null;
+  sourceDocumentType?: ('board-circulars' | 'annual-reports') | null;
+  sourceDocument?:
+    | ({
+        relationTo: 'board-circulars';
+        value: number | BoardCircular;
+      } | null)
+    | ({
+        relationTo: 'annual-reports';
+        value: number | AnnualReport;
+      } | null);
+  status?: ('identified' | 'in-review' | 'resolved') | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "policy-drafts".
+ */
+export interface PolicyDraft {
+  id: number;
+  draftId: string;
+  policyName: string;
+  version: string;
+  sections?:
+    | {
+        type: 'added' | 'modified' | 'removed';
+        sectionNumber: string;
+        title: string;
+        content: string;
+        previousContent?: string | null;
+        citations?:
+          | {
+              frameworkName: string;
+              sectionRef: string;
+              description?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        confidence?: number | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Overall draft confidence (0-1). Below 0.7 requires human review.
+   */
+  overallConfidence?: number | null;
+  /**
+   * True if confidence < 70% — blocked from approval
+   */
+  humanDraftRequired?: boolean | null;
+  humanDraftReason?: string | null;
+  rationale?: {
+    whyNeeded?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+    frameworksMandating?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+    relatedArtifactImpact?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+  };
+  /**
+   * The gap this draft addresses
+   */
+  sourceGap?: (number | null) | PolicyGapAnalysis;
+  sourceRun?: string | null;
+  status?: ('draft' | 'human-draft-required' | 'in-review' | 'approved' | 'rejected' | 'published') | null;
+  approvedBy?: string | null;
+  approvedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pipeline-runs".
+ */
+export interface PipelineRun {
+  id: number;
+  runId: string;
+  sourceDocument:
+    | {
+        relationTo: 'board-circulars';
+        value: number | BoardCircular;
+      }
+    | {
+        relationTo: 'annual-reports';
+        value: number | AnnualReport;
+      };
+  collectionSlug: string;
+  traceId: string;
+  status: 'pending' | 'running' | 'completed' | 'failed';
+  /**
+   * Current pipeline step being executed
+   */
+  currentStep?: string | null;
+  steps?:
+    | {
+        name: string;
+        label: string;
+        status: 'pending' | 'active' | 'complete' | 'error';
+        startedAt?: string | null;
+        completedAt?: string | null;
+        /**
+         * Step output/results
+         */
+        output?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        error?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  startedAt?: string | null;
+  completedAt?: string | null;
+  /**
+   * Total elapsed time in milliseconds
+   */
+  elapsedMs?: number | null;
+  error?: string | null;
+  results?: {
+    objectivesCreated?: number | null;
+    statementsCreated?: number | null;
+    controlsCreated?: number | null;
+    frameworkMappings?: number | null;
+    gapsIdentified?: number | null;
+    draftsCreated?: number | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "challenges".
+ */
+export interface Challenge {
+  id: number;
+  challengeId: string;
+  policyDraft: number | PolicyDraft;
+  /**
+   * User ID or name of the challenger
+   */
+  challengedBy: string;
+  /**
+   * Reason for challenging the policy draft
+   */
+  rationale: string;
+  status?: ('open' | 'under-review' | 'resolved' | 'dismissed') | null;
+  resolution?: string | null;
+  resolvedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-kv".
+ */
+export interface PayloadKv {
+  id: number;
+  key: string;
+  data:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-jobs".
  */
 export interface PayloadJob {
@@ -373,7 +1096,21 @@ export interface PayloadJob {
     | {
         executedAt: string;
         completedAt: string;
-        taskSlug: 'inline' | 'ingest-authoritative-document' | 'evaluate-test-case';
+        taskSlug:
+          | 'inline'
+          | 'ingest-authoritative-document'
+          | 'evaluate-test-case'
+          | 'ingest-board-circular'
+          | 'ingest-annual-report'
+          | 'extract-governance-objectives'
+          | 'extract-control-objectives'
+          | 'extract-risk-appetite'
+          | 'map-to-framework'
+          | 'ingest-policy-document'
+          | 'extract-policy-objectives'
+          | 'research-policy-frameworks'
+          | 'analyze-policy-gaps'
+          | 'draft-policy';
         taskID: string;
         input?:
           | {
@@ -404,14 +1141,48 @@ export interface PayloadJob {
           | boolean
           | null;
         parent?: {
-          taskSlug?: ('inline' | 'ingest-authoritative-document' | 'evaluate-test-case') | null;
+          taskSlug?:
+            | (
+                | 'inline'
+                | 'ingest-authoritative-document'
+                | 'evaluate-test-case'
+                | 'ingest-board-circular'
+                | 'ingest-annual-report'
+                | 'extract-governance-objectives'
+                | 'extract-control-objectives'
+                | 'extract-risk-appetite'
+                | 'map-to-framework'
+                | 'ingest-policy-document'
+                | 'extract-policy-objectives'
+                | 'research-policy-frameworks'
+                | 'analyze-policy-gaps'
+                | 'draft-policy'
+              )
+            | null;
           taskID?: string | null;
         };
         id?: string | null;
       }[]
     | null;
-  workflowSlug?: 'process-test-run' | null;
-  taskSlug?: ('inline' | 'ingest-authoritative-document' | 'evaluate-test-case') | null;
+  workflowSlug?: ('process-test-run' | 'process-grc-extraction') | null;
+  taskSlug?:
+    | (
+        | 'inline'
+        | 'ingest-authoritative-document'
+        | 'evaluate-test-case'
+        | 'ingest-board-circular'
+        | 'ingest-annual-report'
+        | 'extract-governance-objectives'
+        | 'extract-control-objectives'
+        | 'extract-risk-appetite'
+        | 'map-to-framework'
+        | 'ingest-policy-document'
+        | 'extract-policy-objectives'
+        | 'research-policy-frameworks'
+        | 'analyze-policy-gaps'
+        | 'draft-policy'
+      )
+    | null;
   queue?: string | null;
   waitUntil?: string | null;
   processing?: boolean | null;
@@ -450,8 +1221,60 @@ export interface PayloadLockedDocument {
         value: number | InputFile;
       } | null)
     | ({
-        relationTo: 'payload-jobs';
-        value: number | PayloadJob;
+        relationTo: 'frameworks';
+        value: number | Framework;
+      } | null)
+    | ({
+        relationTo: 'board-circulars';
+        value: number | BoardCircular;
+      } | null)
+    | ({
+        relationTo: 'annual-reports';
+        value: number | AnnualReport;
+      } | null)
+    | ({
+        relationTo: 'governance-objectives';
+        value: number | GovernanceObjective;
+      } | null)
+    | ({
+        relationTo: 'control-objectives';
+        value: number | ControlObjective;
+      } | null)
+    | ({
+        relationTo: 'risk-appetite-statements';
+        value: number | RiskAppetiteStatement;
+      } | null)
+    | ({
+        relationTo: 'decision-logs';
+        value: number | DecisionLog;
+      } | null)
+    | ({
+        relationTo: 'audit-trail-entries';
+        value: number | AuditTrailEntry;
+      } | null)
+    | ({
+        relationTo: 'policy-agent-runs';
+        value: number | PolicyAgentRun;
+      } | null)
+    | ({
+        relationTo: 'policy-documents';
+        value: number | PolicyDocument;
+      } | null)
+    | ({
+        relationTo: 'policy-gap-analyses';
+        value: number | PolicyGapAnalysis;
+      } | null)
+    | ({
+        relationTo: 'policy-drafts';
+        value: number | PolicyDraft;
+      } | null)
+    | ({
+        relationTo: 'pipeline-runs';
+        value: number | PipelineRun;
+      } | null)
+    | ({
+        relationTo: 'challenges';
+        value: number | Challenge;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -512,6 +1335,13 @@ export interface UsersSelect<T extends boolean = true> {
   _verificationToken?: T;
   loginAttempts?: T;
   lockUntil?: T;
+  sessions?:
+    | T
+    | {
+        id?: T;
+        createdAt?: T;
+        expiresAt?: T;
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -670,6 +1500,375 @@ export interface InputFilesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "frameworks_select".
+ */
+export interface FrameworksSelect<T extends boolean = true> {
+  name?: T;
+  code?: T;
+  version?: T;
+  description?: T;
+  controls?:
+    | T
+    | {
+        controlId?: T;
+        controlName?: T;
+        domain?: T;
+        process?: T;
+        description?: T;
+        keywords?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "board-circulars_select".
+ */
+export interface BoardCircularsSelect<T extends boolean = true> {
+  title?: T;
+  organization?: T;
+  publishDate?: T;
+  documentType?: T;
+  s3Key?: T;
+  s3Url?: T;
+  parsedText?: T;
+  extractionStatus?: T;
+  errorMessage?: T;
+  governanceObjectives?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "annual-reports_select".
+ */
+export interface AnnualReportsSelect<T extends boolean = true> {
+  title?: T;
+  organization?: T;
+  reportingYear?: T;
+  publishDate?: T;
+  s3Key?: T;
+  s3Url?: T;
+  parsedText?: T;
+  extractionStatus?: T;
+  errorMessage?: T;
+  governanceObjectives?: T;
+  riskAppetiteStatements?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "governance-objectives_select".
+ */
+export interface GovernanceObjectivesSelect<T extends boolean = true> {
+  objectiveId?: T;
+  text?: T;
+  sourceDocumentType?: T;
+  sourceDocument?: T;
+  sourceSection?: T;
+  sourceSectionType?: T;
+  extractionConfidence?: T;
+  keywords?: T;
+  reviewStatus?: T;
+  reviewNotes?: T;
+  controlObjectives?: T;
+  frameworkMappings?:
+    | T
+    | {
+        framework?: T;
+        controlId?: T;
+        controlName?: T;
+        similarityScore?: T;
+        confidence?: T;
+        matchedKeywords?: T;
+        rationale?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "control-objectives_select".
+ */
+export interface ControlObjectivesSelect<T extends boolean = true> {
+  controlId?: T;
+  title?: T;
+  description?: T;
+  governanceObjective?: T;
+  category?: T;
+  owner?: T;
+  frequency?: T;
+  frameworkReferences?:
+    | T
+    | {
+        framework?: T;
+        controlId?: T;
+        controlName?: T;
+        id?: T;
+      };
+  extractionConfidence?: T;
+  reviewStatus?: T;
+  reviewNotes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "risk-appetite-statements_select".
+ */
+export interface RiskAppetiteStatementsSelect<T extends boolean = true> {
+  statementId?: T;
+  statement?: T;
+  riskCategory?: T;
+  appetiteLevel?: T;
+  toleranceThreshold?: T;
+  sourceDocumentType?: T;
+  sourceDocument?: T;
+  sourceSection?: T;
+  extractionConfidence?: T;
+  linkedGovernanceObjectives?: T;
+  frameworkMappings?:
+    | T
+    | {
+        framework?: T;
+        controlId?: T;
+        rationale?: T;
+        id?: T;
+      };
+  reviewStatus?: T;
+  reviewNotes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "decision-logs_select".
+ */
+export interface DecisionLogsSelect<T extends boolean = true> {
+  traceId?: T;
+  action?: T;
+  entityType?: T;
+  entityId?: T;
+  agentType?: T;
+  input?: T;
+  output?: T;
+  reasoning?: T;
+  confidence?: T;
+  modelUsed?: T;
+  tokenUsage?:
+    | T
+    | {
+        input?: T;
+        output?: T;
+        total?: T;
+      };
+  timestamp?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "audit-trail-entries_select".
+ */
+export interface AuditTrailEntriesSelect<T extends boolean = true> {
+  traceId?: T;
+  eventType?: T;
+  entityType?: T;
+  entityId?: T;
+  actor?:
+    | T
+    | {
+        type?: T;
+        user?: T;
+        agentName?: T;
+      };
+  details?: T;
+  sourceTrace?:
+    | T
+    | {
+        sourceDocumentCollection?: T;
+        sourceDocumentId?: T;
+        sourceSection?: T;
+        sourceText?: T;
+      };
+  timestamp?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "policy-agent-runs_select".
+ */
+export interface PolicyAgentRunsSelect<T extends boolean = true> {
+  title?: T;
+  status?: T;
+  currentStep?: T;
+  stepResults?: T;
+  errorMessage?: T;
+  startedAt?: T;
+  completedAt?: T;
+  documents?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "policy-documents_select".
+ */
+export interface PolicyDocumentsSelect<T extends boolean = true> {
+  title?: T;
+  run?: T;
+  category?: T;
+  fileType?: T;
+  s3Key?: T;
+  s3Url?: T;
+  hash?: T;
+  parsedText?: T;
+  ingestStatus?: T;
+  errorMessage?: T;
+  pageCount?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "policy-gap-analyses_select".
+ */
+export interface PolicyGapAnalysesSelect<T extends boolean = true> {
+  gapId?: T;
+  policyName?: T;
+  gapDescription?: T;
+  frameworksAffected?:
+    | T
+    | {
+        frameworkName?: T;
+        sectionRef?: T;
+        id?: T;
+      };
+  priority?: T;
+  action?: T;
+  confidence?: T;
+  reasoning?: T;
+  sourceRun?: T;
+  sourceDocumentType?: T;
+  sourceDocument?: T;
+  status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "policy-drafts_select".
+ */
+export interface PolicyDraftsSelect<T extends boolean = true> {
+  draftId?: T;
+  policyName?: T;
+  version?: T;
+  sections?:
+    | T
+    | {
+        type?: T;
+        sectionNumber?: T;
+        title?: T;
+        content?: T;
+        previousContent?: T;
+        citations?:
+          | T
+          | {
+              frameworkName?: T;
+              sectionRef?: T;
+              description?: T;
+              id?: T;
+            };
+        confidence?: T;
+        id?: T;
+      };
+  overallConfidence?: T;
+  humanDraftRequired?: T;
+  humanDraftReason?: T;
+  rationale?:
+    | T
+    | {
+        whyNeeded?: T;
+        frameworksMandating?: T;
+        relatedArtifactImpact?: T;
+      };
+  sourceGap?: T;
+  sourceRun?: T;
+  status?: T;
+  approvedBy?: T;
+  approvedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pipeline-runs_select".
+ */
+export interface PipelineRunsSelect<T extends boolean = true> {
+  runId?: T;
+  sourceDocument?: T;
+  collectionSlug?: T;
+  traceId?: T;
+  status?: T;
+  currentStep?: T;
+  steps?:
+    | T
+    | {
+        name?: T;
+        label?: T;
+        status?: T;
+        startedAt?: T;
+        completedAt?: T;
+        output?: T;
+        error?: T;
+        id?: T;
+      };
+  startedAt?: T;
+  completedAt?: T;
+  elapsedMs?: T;
+  error?: T;
+  results?:
+    | T
+    | {
+        objectivesCreated?: T;
+        statementsCreated?: T;
+        controlsCreated?: T;
+        frameworkMappings?: T;
+        gapsIdentified?: T;
+        draftsCreated?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "challenges_select".
+ */
+export interface ChallengesSelect<T extends boolean = true> {
+  challengeId?: T;
+  policyDraft?: T;
+  challengedBy?: T;
+  rationale?: T;
+  status?: T;
+  resolution?: T;
+  resolvedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-kv_select".
+ */
+export interface PayloadKvSelect<T extends boolean = true> {
+  key?: T;
+  data?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-jobs_select".
  */
 export interface PayloadJobsSelect<T extends boolean = true> {
@@ -768,6 +1967,16 @@ export interface DevPanelSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "collections_widget".
+ */
+export interface CollectionsWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "TaskIngest-authoritative-document".
  */
 export interface TaskIngestAuthoritativeDocument {
@@ -853,6 +2062,171 @@ export interface TaskEvaluateTestCase {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskIngest-board-circular".
+ */
+export interface TaskIngestBoardCircular {
+  input: {
+    docId: string;
+  };
+  output: {
+    success: boolean;
+    message?: string | null;
+    parsedTextLength?: number | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskIngest-annual-report".
+ */
+export interface TaskIngestAnnualReport {
+  input: {
+    docId: string;
+  };
+  output: {
+    success: boolean;
+    message?: string | null;
+    parsedTextLength?: number | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskExtract-governance-objectives".
+ */
+export interface TaskExtractGovernanceObjectives {
+  input: {
+    docId: string;
+    collectionSlug: string;
+    traceId: string;
+  };
+  output: {
+    success: boolean;
+    message?: string | null;
+    objectivesCreated?: number | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskExtract-control-objectives".
+ */
+export interface TaskExtractControlObjectives {
+  input: {
+    governanceObjectiveId: string;
+    traceId: string;
+  };
+  output: {
+    success: boolean;
+    message?: string | null;
+    controlsCreated?: number | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskExtract-risk-appetite".
+ */
+export interface TaskExtractRiskAppetite {
+  input: {
+    docId: string;
+    collectionSlug: string;
+    traceId: string;
+  };
+  output: {
+    success: boolean;
+    message?: string | null;
+    statementsCreated?: number | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskMap-to-framework".
+ */
+export interface TaskMapToFramework {
+  input: {
+    governanceObjectiveId: string;
+    traceId: string;
+  };
+  output: {
+    success: boolean;
+    message?: string | null;
+    mappingsCreated?: number | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskIngest-policy-document".
+ */
+export interface TaskIngestPolicyDocument {
+  input: {
+    docId: string;
+  };
+  output: {
+    success: boolean;
+    message?: string | null;
+    parsedTextLength?: number | null;
+    pageCount?: number | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskExtract-policy-objectives".
+ */
+export interface TaskExtractPolicyObjectives {
+  input: {
+    runId: string;
+  };
+  output: {
+    success: boolean;
+    message?: string | null;
+    objectiveCount?: number | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskResearch-policy-frameworks".
+ */
+export interface TaskResearchPolicyFrameworks {
+  input: {
+    runId: string;
+  };
+  output: {
+    success: boolean;
+    message?: string | null;
+    totalMappings?: number | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskAnalyze-policy-gaps".
+ */
+export interface TaskAnalyzePolicyGaps {
+  input: {
+    docId: string;
+    collectionSlug: string;
+    traceId: string;
+  };
+  output: {
+    success: boolean;
+    message?: string | null;
+    gapsCreated?: number | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskDraft-policy".
+ */
+export interface TaskDraftPolicy {
+  input: {
+    docId: string;
+    collectionSlug: string;
+    traceId: string;
+  };
+  output: {
+    success: boolean;
+    message?: string | null;
+    draftsCreated?: number | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "WorkflowProcess-test-run".
  */
 export interface WorkflowProcessTestRun {
@@ -861,6 +2235,17 @@ export interface WorkflowProcessTestRun {
     currentTestRun: number | TestRun;
     choosedAuthoritativeDocument: number | AuthoritativeDocument;
     choosedTestSuites: (number | TestSuite)[];
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "WorkflowProcess-grc-extraction".
+ */
+export interface WorkflowProcessGrcExtraction {
+  input: {
+    traceId: string;
+    docId: string;
+    collectionSlug: string;
   };
 }
 /**
