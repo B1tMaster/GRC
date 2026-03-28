@@ -5,4 +5,4 @@
  * settings (e.g. https://your-platform.up.railway.app). The build script
  * injects it here. For local development, defaults to localhost:3000.
  */
-window.EVONIX_API_BASE = '__EVONIX_API_BASE__';
+window.EVONIX_API_BASE = 'https://evonix-app-production.up.railway.app';

@@ -108,6 +108,7 @@ export default buildConfig({
     },
   },
   serverURL: process.env.NEXT_PUBLIC_SERVER_URL,
+  cors: (process.env.CORS_ALLOWED_ORIGINS || '').split(',').map(s => s.trim()).filter(Boolean),
   collections: [
     Users,
     AuthoritativeDocumentsCollection,
