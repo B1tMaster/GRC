@@ -22,7 +22,9 @@
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
     "services:up": "docker compose -f compose.services.yaml --env-file .env.docker up -d",
     "services:down": "docker compose -f compose.services.yaml --env-file .env.docker down",
-    "fetch-seeds": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/fetch-seeds.ts"
+    "fetch-seeds": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/fetch-seeds.ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -87,7 +89,8 @@
     "prettier": "^3.4.2",
     "tailwindcss": "^3.4.15",
     "tsx": "^4.19.2",
-    "typescript": "5.7.2"
+    "typescript": "5.7.2",
+    "vitest": "^4.1.2"
   },
   "packageManager": "pnpm@9.15.0"
 }

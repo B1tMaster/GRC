@@ -40,3 +40,6 @@ platform/zerox-service/__pycache__/
 
 # Local Netlify folder
 .netlify
+
+# Test fixture PDFs (large binary files)
+**/fixtures/*.pdf
