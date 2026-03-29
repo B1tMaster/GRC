@@ -387,7 +387,7 @@
         <div id="grc-objectives-summary" style="font-size:11px;color:var(--muted);margin-bottom:12px;"></div>
         <table class="table">
           <thead>
-            <tr><th>Theme</th><th>Category</th><th>Description</th><th>Source</th><th>Confidence</th></tr>
+            <tr><th>Objective</th><th>Type</th><th>Source Section</th><th>ID</th><th>Confidence</th></tr>
           </thead>
           <tbody id="grc-objectives-body"></tbody>
         </table>
@@ -398,7 +398,7 @@
         <h2>Risk Appetite Statements</h2>
         <table class="table">
           <thead>
-            <tr><th>Statement</th><th>Risk Level</th><th>Category</th><th>Confidence</th></tr>
+            <tr><th>Statement</th><th>Appetite</th><th>Category</th><th>Tolerance Threshold</th><th>Confidence</th></tr>
           </thead>
           <tbody id="grc-risk-body"></tbody>
         </table>
@@ -409,7 +409,7 @@
         <h2>Derived Control Objectives</h2>
         <table class="table">
           <thead>
-            <tr><th>Control Objective</th><th>Category</th><th>Parent Objective</th><th>Confidence</th></tr>
+            <tr><th>Control Objective</th><th>Type</th><th>Owner</th><th>Frequency</th><th>Frameworks</th><th>Confidence</th></tr>
           </thead>
           <tbody id="grc-controls-body"></tbody>
         </table>
@@ -2299,22 +2299,34 @@
 
         const categoryColors = { Risk: 'red', Compliance: 'blue', Operational: 'teal', Ethics: 'purple', Strategic: 'orange', Governance: 'green' };
 
+        function confLabel(val) {
+          if (typeof val === 'number') return Math.round(val * 100) + '%';
+          if (val === 'high') return 'High';
+          if (val === 'medium') return 'Medium';
+          if (val === 'low') return 'Low';
+          return val || '—';
+        }
+        function confColor(val) {
+          if (typeof val === 'number') return val >= 0.85 ? 'green' : val >= 0.7 ? 'orange' : 'red';
+          if (val === 'high') return 'green';
+          if (val === 'medium') return 'orange';
+          return 'red';
+        }
+
         function renderGrcObjectives(objs) {
           const section = document.getElementById('grc-objectives-section');
           const summary = document.getElementById('grc-objectives-summary');
           const tbody = document.getElementById('grc-objectives-body');
           summary.textContent = `${objs.length} governance objectives extracted from the source document.`;
           tbody.innerHTML = objs.map(o => {
-            const conf = o.extractionConfidence != null ? Math.round(o.extractionConfidence * 100) : '—';
-            const confColor = conf >= 85 ? 'green' : conf >= 70 ? 'orange' : 'red';
-            const cat = o.category || 'General';
-            const color = categoryColors[cat] || 'muted';
+            const sectionType = (o.sourceSectionType || '').replace(/_/g, ' ');
+            const catColor = categoryColors[sectionType] || 'muted';
             return `<tr>
-              <td><strong>${o.theme || o.title || '—'}</strong></td>
-              <td><span class="tag" style="border-color:var(--${color});">${cat}</span></td>
-              <td style="font-size:11px;max-width:320px;">${o.description || ''}</td>
-              <td style="font-size:10px;color:var(--muted);">${o.sourceSection || o.sourceSectionRef || '—'}</td>
-              <td><span style="color:var(--${confColor});font-weight:600;">${conf}%</span></td>
+              <td style="max-width:400px;"><strong>${o.text || o.theme || o.title || '—'}</strong></td>
+              <td><span class="tag" style="border-color:var(--${catColor});text-transform:capitalize;">${sectionType || 'General'}</span></td>
+              <td style="font-size:11px;max-width:200px;">${o.sourceSection || '—'}</td>
+              <td style="font-size:10px;color:var(--muted);">${o.objectiveId || '—'}</td>
+              <td><span style="color:var(--${confColor(o.extractionConfidence)});font-weight:600;">${confLabel(o.extractionConfidence)}</span></td>
             </tr>`;
           }).join('');
           grcShowSection(section);
@@ -2324,14 +2336,14 @@
           const section = document.getElementById('grc-risk-section');
           const tbody = document.getElementById('grc-risk-body');
           tbody.innerHTML = risks.map(r => {
-            const level = r.riskLevel || r.toleranceLevel || '—';
-            const levelColor = level === 'Low' || level === 'low' ? 'green' : level === 'Medium' || level === 'moderate' ? 'orange' : 'red';
-            const conf = r.extractionConfidence != null ? Math.round(r.extractionConfidence * 100) : '—';
+            const appetite = r.appetiteLevel || '—';
+            const appetiteColor = appetite === 'minimal' ? 'green' : appetite === 'cautious' || appetite === 'moderate' ? 'orange' : appetite === 'open' ? 'blue' : 'red';
             return `<tr>
-              <td style="max-width:400px;">${r.statement || r.description || '—'}</td>
-              <td><span style="color:var(--${levelColor});font-weight:500;">${level}</span></td>
-              <td>${r.category || r.riskCategory || '—'}</td>
-              <td>${conf}%</td>
+              <td style="max-width:350px;">${r.statement || '—'}</td>
+              <td><span class="tag" style="border-color:var(--${appetiteColor});text-transform:capitalize;">${appetite}</span></td>
+              <td style="text-transform:capitalize;">${(r.riskCategory || '—').replace(/_/g, ' ')}</td>
+              <td style="font-size:11px;max-width:200px;">${r.toleranceThreshold || '—'}</td>
+              <td><span style="color:var(--${confColor(r.extractionConfidence)});font-weight:600;">${confLabel(r.extractionConfidence)}</span></td>
             </tr>`;
           }).join('');
           grcShowSection(section);
@@ -2341,14 +2353,17 @@
           const section = document.getElementById('grc-controls-section');
           const tbody = document.getElementById('grc-controls-body');
           tbody.innerHTML = ctrls.map(c => {
-            const conf = c.extractionConfidence != null ? Math.round(c.extractionConfidence * 100) : '—';
             const parent = c.governanceObjective;
-            const parentLabel = typeof parent === 'object' ? (parent?.theme || parent?.title || `ID ${parent?.id}`) : (parent || '—');
+            const parentLabel = typeof parent === 'object' ? (parent?.text || parent?.objectiveId || `#${parent?.id}`) : (parent || '—');
+            const catColor = c.category === 'preventive' ? 'green' : c.category === 'detective' ? 'blue' : c.category === 'corrective' ? 'orange' : c.category === 'directive' ? 'purple' : 'muted';
+            const frameworks = (c.frameworkReferences || []).map(f => f.controlId || f.controlName).join(', ');
             return `<tr>
-              <td style="max-width:350px;">${c.title || c.description || '—'}</td>
-              <td>${c.category || '—'}</td>
-              <td style="font-size:11px;color:var(--muted);">${parentLabel}</td>
-              <td>${conf}%</td>
+              <td><strong>${c.title || '—'}</strong><br><span style="font-size:10px;color:var(--muted);">${(c.description || '').slice(0, 120)}${(c.description || '').length > 120 ? '...' : ''}</span></td>
+              <td><span class="tag" style="border-color:var(--${catColor});text-transform:capitalize;">${c.category || '—'}</span></td>
+              <td style="font-size:11px;">${c.owner || '—'}</td>
+              <td style="font-size:11px;text-transform:capitalize;">${(c.frequency || '—').replace(/_/g, ' ')}</td>
+              <td style="font-size:10px;color:var(--muted);">${frameworks || '—'}</td>
+              <td><span style="color:var(--${confColor(c.extractionConfidence)});font-weight:600;">${confLabel(c.extractionConfidence)}</span></td>
             </tr>`;
           }).join('');
           grcShowSection(section);
