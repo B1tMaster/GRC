@@ -151,7 +151,7 @@ export async function sendGeneralLlmRequest(params: z.infer<typeof ParamsSchema>
           response_format: responseSchema,
           ...(reasoning
             ? { max_completion_tokens: 50000 }
-            : { max_tokens: 16000, temperature }),
+            : { max_tokens: 8192, temperature }),
         })
         content = response.choices[0].message.parsed as unknown as object
         usage = response.usage ?? undefined
@@ -162,7 +162,7 @@ export async function sendGeneralLlmRequest(params: z.infer<typeof ParamsSchema>
           ...(schema && !reasoning ? { response_format: { type: 'json_object' as const } } : {}),
           ...(reasoning
             ? { max_completion_tokens: 50000 }
-            : { max_tokens: 16000, temperature }),
+            : { max_tokens: 8192, temperature }),
         })
 
         const rawContent = response.choices[0].message.content ?? ''
