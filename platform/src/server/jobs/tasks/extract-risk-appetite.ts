@@ -4,6 +4,9 @@ import { sendGeneralLlmRequest } from '@/server/llm/general-llm/request'
 import { modelNames } from '@/server/llm/general-llm/mappings'
 import { RISK_APPETITE_SYSTEM_PROMPT } from '@/server/llm/workflows/grc/prompts'
 import { RiskAppetiteResponseSchema } from '@/server/llm/workflows/grc/schemas'
+import type { RiskAppetiteResponse } from '@/server/llm/workflows/grc/schemas'
+import { truncateDocumentText } from '@/server/lib/document-text'
+import { findDocumentById, buildSourceDocumentRelation, asSourceDocumentType } from '@/server/lib/payload-helpers'
 
 export const extractRiskAppetiteInputSchema: Field[] = [
   { name: 'docId', type: 'text', required: true },
@@ -29,17 +32,18 @@ export const extractRiskAppetiteHandler: TaskHandler<'extract-risk-appetite'> = 
 }): Promise<{ output: Output }> => {
   try {
     const { docId, collectionSlug, traceId } = input
-    const doc = await payload.findByID({ collection: collectionSlug as any, id: docId })
+    const doc = await findDocumentById(payload, collectionSlug, docId)
 
     if (!doc?.parsedText) throw new Error(`Document ${docId} has no parsed text`)
 
     const generationId = `grc-extract-risk-${traceId}`
 
-    const truncatedText = doc.parsedText.length > 60000
-      ? doc.parsedText.slice(0, 60000) + '\n\n[Document truncated for processing]'
-      : doc.parsedText
+    const { text: truncatedText, wasTruncated } = truncateDocumentText(doc.parsedText, { preserveParagraphs: true })
+    if (wasTruncated) {
+      payload.logger.info(`Document ${docId} text truncated from ${doc.parsedText.length} chars for risk extraction`)
+    }
 
-    const result = await sendGeneralLlmRequest({
+    const result = await sendGeneralLlmRequest<RiskAppetiteResponse>({
       name: 'extract-risk-appetite',
       systemPrompt: RISK_APPETITE_SYSTEM_PROMPT,
       userPrompt: `Extract risk appetite statements from the following document:\n\nTitle: ${doc.title}\nOrganization: ${doc.organization || 'Unknown'}\n\n---\n\n${truncatedText}`,
@@ -61,8 +65,8 @@ export const extractRiskAppetiteHandler: TaskHandler<'extract-risk-appetite'> = 
           riskCategory: stmt.riskCategory,
           appetiteLevel: stmt.appetiteLevel,
           toleranceThreshold: stmt.toleranceThreshold,
-          sourceDocumentType: collectionSlug as any,
-          sourceDocument: { relationTo: collectionSlug, value: Number(docId) } as any,
+          sourceDocumentType: asSourceDocumentType(collectionSlug),
+          sourceDocument: buildSourceDocumentRelation(collectionSlug, docId),
           sourceSection: stmt.sourceSection,
           extractionConfidence: stmt.confidence,
           reviewStatus: 'pending',

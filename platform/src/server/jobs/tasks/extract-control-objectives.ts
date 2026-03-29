@@ -4,6 +4,7 @@ import { sendGeneralLlmRequest } from '@/server/llm/general-llm/request'
 import { modelNames } from '@/server/llm/general-llm/mappings'
 import { CONTROL_OBJECTIVES_SYSTEM_PROMPT } from '@/server/llm/workflows/grc/prompts'
 import { ControlObjectivesResponseSchema } from '@/server/llm/workflows/grc/schemas'
+import type { ControlObjectivesResponse } from '@/server/llm/workflows/grc/schemas'
 
 export const extractControlObjectivesInputSchema: Field[] = [
   { name: 'governanceObjectiveId', type: 'text', required: true },
@@ -38,7 +39,7 @@ export const extractControlObjectivesHandler: TaskHandler<'extract-control-objec
 
     const generationId = `grc-extract-ctrl-${traceId}-${governanceObjectiveId}`
 
-    const result = await sendGeneralLlmRequest({
+    const result = await sendGeneralLlmRequest<ControlObjectivesResponse>({
       name: 'extract-control-objectives',
       systemPrompt: CONTROL_OBJECTIVES_SYSTEM_PROMPT,
       userPrompt: `Derive control objectives from the following governance objective:\n\nObjective ID: ${govObj.objectiveId}\nText: ${govObj.text}\nSection Type: ${govObj.sourceSectionType}\nKeywords: ${JSON.stringify(govObj.keywords)}\n\nProvide specific, actionable control objectives that would implement or support this governance objective.`,
@@ -62,7 +63,7 @@ export const extractControlObjectivesHandler: TaskHandler<'extract-control-objec
           category: ctrl.category,
           owner: ctrl.owner,
           frequency: ctrl.frequency,
-          frameworkReferences: ctrl.frameworkReferences.map((ref: any) => ({
+          frameworkReferences: ctrl.frameworkReferences.map((ref: { controlId: string; controlName: string }) => ({
             controlId: ref.controlId,
             controlName: ref.controlName,
           })),

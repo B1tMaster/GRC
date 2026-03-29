@@ -2,6 +2,7 @@ import { File } from 'formdata-node'
 import { Field, Payload, TaskHandler } from 'payload'
 import { MinioService } from '@/server/services/storage/minio'
 import { PdfParserService } from '@/server/services/pdf-parser/zerox'
+import type { PolicyDocument } from '@/payload-types'
 
 export const ingestPolicyDocumentInputSchema: Field[] = [
   { name: 'docId', type: 'text', required: true },
@@ -38,13 +39,14 @@ export const ingestPolicyDocumentHandler: TaskHandler<'ingest-policy-document'> 
 
     if (!doc) throw new Error(`Policy document ${docId} not found`)
 
-    if ((doc as any).parsedText && (doc as any).ingestStatus === 'complete') {
+    const policyDoc = doc as PolicyDocument
+    if (policyDoc.parsedText && policyDoc.ingestStatus === 'processed') {
       return {
         output: {
           success: true,
           message: 'Document already ingested',
-          parsedTextLength: ((doc as any).parsedText as string).length,
-          pageCount: (doc as any).pageCount ?? 0,
+          parsedTextLength: policyDoc.parsedText.length,
+          pageCount: policyDoc.pageCount ?? 0,
         },
       }
     }

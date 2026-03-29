@@ -4,6 +4,9 @@ import { sendGeneralLlmRequest } from '@/server/llm/general-llm/request'
 import { modelNames } from '@/server/llm/general-llm/mappings'
 import { GOVERNANCE_OBJECTIVES_SYSTEM_PROMPT } from '@/server/llm/workflows/grc/prompts'
 import { GovernanceObjectivesResponseSchema } from '@/server/llm/workflows/grc/schemas'
+import type { GovernanceObjectivesResponse } from '@/server/llm/workflows/grc/schemas'
+import { truncateDocumentText } from '@/server/lib/document-text'
+import { findDocumentById, updateDocument, buildSourceDocumentRelation, asSourceDocumentType } from '@/server/lib/payload-helpers'
 
 export const extractGovernanceObjectivesInputSchema: Field[] = [
   { name: 'docId', type: 'text', required: true },
@@ -29,25 +32,22 @@ export const extractGovernanceObjectivesHandler: TaskHandler<'extract-governance
 }): Promise<{ output: Output }> => {
   try {
     const { docId, collectionSlug, traceId } = input
-    const doc = await payload.findByID({ collection: collectionSlug as any, id: docId })
+    const doc = await findDocumentById(payload, collectionSlug, docId)
 
     if (!doc?.parsedText) {
       throw new Error(`Document ${docId} has no parsed text`)
     }
 
-    await payload.update({
-      collection: collectionSlug as any,
-      id: docId,
-      data: { extractionStatus: 'extracting' },
-    })
+    await updateDocument(payload, collectionSlug, docId, { extractionStatus: 'extracting' })
 
     const generationId = `grc-extract-gov-${traceId}`
 
-    const truncatedText = doc.parsedText.length > 60000
-      ? doc.parsedText.slice(0, 60000) + '\n\n[Document truncated for processing]'
-      : doc.parsedText
+    const { text: truncatedText, wasTruncated } = truncateDocumentText(doc.parsedText, { preserveParagraphs: true })
+    if (wasTruncated) {
+      payload.logger.info(`Document ${docId} text truncated from ${doc.parsedText.length} chars for extraction`)
+    }
 
-    const result = await sendGeneralLlmRequest({
+    const result = await sendGeneralLlmRequest<GovernanceObjectivesResponse>({
       name: 'extract-governance-objectives',
       systemPrompt: GOVERNANCE_OBJECTIVES_SYSTEM_PROMPT,
       userPrompt: `Extract governance objectives from the following document:\n\nTitle: ${doc.title}\nOrganization: ${doc.organization || 'Unknown'}\n\n---\n\n${truncatedText}`,
@@ -66,8 +66,8 @@ export const extractGovernanceObjectivesHandler: TaskHandler<'extract-governance
         data: {
           objectiveId,
           text: obj.text,
-          sourceDocumentType: collectionSlug as any,
-          sourceDocument: { relationTo: collectionSlug, value: Number(docId) } as any,
+          sourceDocumentType: asSourceDocumentType(collectionSlug),
+          sourceDocument: buildSourceDocumentRelation(collectionSlug, docId),
           sourceSection: obj.sourceSection,
           sourceSectionType: obj.sourceSectionType,
           extractionConfidence: obj.extractionConfidence,

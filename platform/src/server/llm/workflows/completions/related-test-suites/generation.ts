@@ -84,7 +84,7 @@ export const generateRelatedTestSuites = async (props: z.infer<typeof GenerateRe
 export const generateDocSummary = async (props: { userInput: string; traceId: string }): Promise<string> => {
   const { userInput, traceId } = props
 
-  const response = await sendGeneralLlmRequest({
+  const response = await sendGeneralLlmRequest<string>({
     generationId: traceId,
     name: 'generate-doc-summary',
     userPrompt: userInput,

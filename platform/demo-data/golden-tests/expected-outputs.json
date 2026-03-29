@@ -1,0 +1,67 @@
+{
+  "testDocuments": [
+    {
+      "file": "small-board-circular.txt",
+      "type": "board-circular",
+      "title": "ABC Bank Board Circular BC/2026/001",
+      "organization": "ABC Bank Holdings Limited",
+      "charCount": 1900,
+      "expectedOutputs": {
+        "governanceObjectives": {
+          "minCount": 4,
+          "maxCount": 10,
+          "mustContainKeywords": [
+            "risk management",
+            "compliance",
+            "internal controls",
+            "risk appetite"
+          ],
+          "expectedSectionTypes": [
+            "board_responsibilities",
+            "risk_appetite",
+            "matters_reserved",
+            "committee_update"
+          ]
+        },
+        "riskAppetiteStatements": {
+          "minCount": 4,
+          "maxCount": 6,
+          "expectedCategories": [
+            "financial",
+            "operational",
+            "cyber",
+            "compliance",
+            "strategic"
+          ]
+        },
+        "frameworkMappings": {
+          "expectedFrameworks": [
+            "COBIT2019",
+            "COSO_ERM"
+          ],
+          "minMappingsPerObjective": 1
+        },
+        "gapAnalysis": {
+          "minGaps": 1,
+          "mustIdentifyAreas": [
+            "cyber security",
+            "operational resilience"
+          ]
+        }
+      }
+    }
+  ],
+  "regressionChecks": {
+    "description": "Run these checks after any pipeline code changes to verify extraction quality hasn't degraded",
+    "steps": [
+      "1. Load test document via Payload API",
+      "2. Trigger pipeline run",
+      "3. Wait for completion (expected: <2 min for small doc)",
+      "4. Query governance-objectives — verify count within expected range",
+      "5. Query risk-appetite-statements — verify categories present",
+      "6. Query governance-objectives with frameworkMappings — verify mappings exist",
+      "7. Query policy-gap-analyses — verify gaps identified",
+      "8. Check audit-trail-entries — verify all steps logged"
+    ]
+  }
+}

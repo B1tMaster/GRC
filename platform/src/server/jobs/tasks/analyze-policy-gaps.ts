@@ -4,7 +4,10 @@ import { sendGeneralLlmRequest } from '@/server/llm/general-llm/request'
 import { modelNames } from '@/server/llm/general-llm/mappings'
 import { GAP_ANALYSIS_SYSTEM_PROMPT, buildGapAnalysisUserPrompt } from '@/server/llm/workflows/grc/gap-analysis-prompts'
 import { PolicyGapAnalysisResponseSchema } from '@/server/llm/workflows/grc/gap-analysis-schemas'
+import type { PolicyGapAnalysisResponse } from '@/server/llm/workflows/grc/gap-analysis-schemas'
 import { ALL_FRAMEWORK_CONTROLS } from '@/server/handlers/grc-extraction/framework-catalog'
+import { truncateDocumentText } from '@/server/lib/document-text'
+import { findDocumentById, buildSourceDocumentRelation, asSourceDocumentType } from '@/server/lib/payload-helpers'
 
 export const analyzePolicyGapsInputSchema: Field[] = [
   { name: 'docId', type: 'text', required: true },
@@ -59,7 +62,7 @@ export const analyzePolicyGapsHandler: TaskHandler<'analyze-policy-gaps'> = asyn
   try {
     const { docId, collectionSlug, traceId } = input
 
-    const doc = await payload.findByID({ collection: collectionSlug as any, id: docId })
+    const doc = await findDocumentById(payload, collectionSlug, docId)
     if (!doc?.parsedText) {
       throw new Error(`Document ${docId} has no parsed text`)
     }
@@ -72,26 +75,29 @@ export const analyzePolicyGapsHandler: TaskHandler<'analyze-policy-gaps'> = asyn
 
     const objectivesContext = govObjectives.docs.length > 0
       ? govObjectives.docs
-          .map((obj: any, i: number) => {
-            const mappings = Array.isArray(obj.frameworkMappings) && obj.frameworkMappings.length > 0
-              ? obj.frameworkMappings
-                  .map((m: any) => `${m.controlId || 'unknown'} (confidence: ${m.confidence || 'n/a'})`)
+          .map((obj, i: number) => {
+            const mappingsList = Array.isArray(obj.frameworkMappings) ? obj.frameworkMappings : []
+            const mappings = mappingsList.length > 0
+              ? mappingsList
+                  .map((m) => `${m.controlId || 'unknown'} (confidence: ${m.confidence || 'n/a'})`)
                   .join(', ')
               : 'no framework mappings yet'
-            return `${i + 1}. [${obj.sourceSectionType || 'general'}] ${obj.text}\n   Keywords: ${Array.isArray(obj.keywords) ? obj.keywords.join(', ') : 'none'}\n   Framework mappings: ${mappings}`
+            const keywords = Array.isArray(obj.keywords) ? (obj.keywords as string[]).join(', ') : 'none'
+            return `${i + 1}. [${obj.sourceSectionType || 'general'}] ${obj.text}\n   Keywords: ${keywords}\n   Framework mappings: ${mappings}`
           })
           .join('\n\n')
       : 'No governance objectives extracted yet.'
 
     const frameworkRequirements = buildFrameworkRequirementsContext()
 
-    const truncatedText = doc.parsedText.length > 50000
-      ? doc.parsedText.slice(0, 50000) + '\n\n[Document truncated for processing]'
-      : doc.parsedText
+    const { text: truncatedText } = truncateDocumentText(doc.parsedText, {
+      maxChars: 100_000,
+      preserveParagraphs: true,
+    })
 
     const generationId = `gap-analysis-${traceId}`
 
-    const result = await sendGeneralLlmRequest({
+    const result = await sendGeneralLlmRequest<PolicyGapAnalysisResponse>({
       name: 'analyze-policy-gaps',
       systemPrompt: GAP_ANALYSIS_SYSTEM_PROMPT,
       userPrompt: buildGapAnalysisUserPrompt({
@@ -116,7 +122,7 @@ export const analyzePolicyGapsHandler: TaskHandler<'analyze-policy-gaps'> = asyn
           gapId,
           policyName: gap.policyName,
           gapDescription: gap.gapDescription,
-          frameworksAffected: gap.frameworksAffected.map((f: any) => ({
+          frameworksAffected: gap.frameworksAffected.map((f: { frameworkName: string; sectionRef: string }) => ({
             frameworkName: f.frameworkName,
             sectionRef: f.sectionRef,
           })),
@@ -125,8 +131,8 @@ export const analyzePolicyGapsHandler: TaskHandler<'analyze-policy-gaps'> = asyn
           confidence: gap.confidence,
           reasoning: gap.reasoning,
           sourceRun: traceId,
-          sourceDocumentType: collectionSlug as any,
-          sourceDocument: { relationTo: collectionSlug, value: Number(docId) } as any,
+          sourceDocumentType: asSourceDocumentType(collectionSlug),
+          sourceDocument: buildSourceDocumentRelation(collectionSlug, docId),
           status: 'identified',
         },
       })
@@ -167,7 +173,7 @@ export const analyzePolicyGapsHandler: TaskHandler<'analyze-policy-gaps'> = asyn
             action: gap.action,
             confidence: gap.confidence,
             frameworksAffected: gap.frameworksAffected.map(
-              (f: any) => `${f.frameworkName} ${f.sectionRef}`,
+              (f: { frameworkName: string; sectionRef: string }) => `${f.frameworkName} ${f.sectionRef}`,
             ),
           },
           sourceTrace: {

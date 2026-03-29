@@ -4,6 +4,7 @@ import { sendGeneralLlmRequest } from '@/server/llm/general-llm/request'
 import { modelNames } from '@/server/llm/general-llm/mappings'
 import { POLICY_OBJECTIVES_SYSTEM_PROMPT } from '@/server/llm/workflows/policy-agent/prompts'
 import { PolicyObjectivesResponseSchema, type PolicyObjectivesResponse } from '@/server/llm/workflows/policy-agent/schemas'
+import { buildMultiDocumentContext } from '@/server/lib/document-text'
 
 export const extractPolicyObjectivesInputSchema: Field[] = [
   { name: 'runId', type: 'text', required: true },
@@ -18,25 +19,6 @@ export const extractPolicyObjectivesOutputSchema: Field[] = [
 interface Input { runId: string }
 interface Output { success: boolean; message?: string; objectiveCount?: number }
 
-const MAX_CHARS = 60_000
-
-function buildDocumentContext(docs: Array<{ id: string | number; title?: string; parsedText?: string; category?: string }>): string {
-  const sections: string[] = []
-
-  for (const doc of docs) {
-    const title = (doc.title as string) || `Document ${doc.id}`
-    const category = (doc.category as string) || 'unknown'
-    const text = (doc.parsedText as string) || ''
-    sections.push(`=== DOCUMENT: "${title}" (category: ${category}, id: ${doc.id}) ===\n\n${text}`)
-  }
-
-  const combined = sections.join('\n\n---\n\n')
-
-  if (combined.length > MAX_CHARS) {
-    return combined.slice(0, MAX_CHARS) + '\n\n[Documents truncated for processing]'
-  }
-  return combined
-}
 
 export const extractPolicyObjectivesHandler: TaskHandler<'extract-policy-objectives'> = async ({
   input,
@@ -71,7 +53,9 @@ export const extractPolicyObjectivesHandler: TaskHandler<'extract-policy-objecti
       throw new Error('No processed documents found for this run. Upload and ingest documents first.')
     }
 
-    const documentContext = buildDocumentContext(policyDocs as Array<{ id: string | number; title?: string; parsedText?: string; category?: string }>)
+    const { text: documentContext } = buildMultiDocumentContext(
+      policyDocs as Array<{ id: string | number; title?: string; parsedText?: string; category?: string }>,
+    )
     const totalChars = policyDocs.reduce((sum, d) => sum + ((d.parsedText as string) || '').length, 0)
 
     const generationId = `policy-extract-obj-${traceId}`

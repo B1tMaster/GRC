@@ -78,3 +78,7 @@ export const FrameworkMappingSchema = z.object({
 export const FrameworkMappingResponseSchema = z.object({
   mappings: z.array(FrameworkMappingSchema),
 })
+
+export type GovernanceObjectivesResponse = z.infer<typeof GovernanceObjectivesResponseSchema>
+export type ControlObjectivesResponse = z.infer<typeof ControlObjectivesResponseSchema>
+export type RiskAppetiteResponse = z.infer<typeof RiskAppetiteResponseSchema>

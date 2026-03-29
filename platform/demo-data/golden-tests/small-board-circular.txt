@@ -1,0 +1,36 @@
+BOARD OF DIRECTORS MEETING
+ABC Bank Holdings Limited
+Date: 15 January 2026
+Reference: BC/2026/001
+
+AGENDA ITEM 3: GOVERNANCE FRAMEWORK REVIEW
+
+3.1 Board Responsibilities
+The Board reaffirms its commitment to maintaining robust governance standards in line with HKMA SPM requirements and international best practices. The Board shall:
+- Oversee the implementation of the Enterprise Risk Management framework
+- Ensure compliance with all applicable regulatory requirements
+- Review and approve risk appetite statements on a quarterly basis
+- Monitor the effectiveness of internal controls
+
+3.2 Risk Appetite Statement
+The Board has approved the following risk appetite parameters for FY2026:
+- Credit Risk: Cautious appetite. Maximum single-name exposure not to exceed 10% of Tier 1 capital.
+- Operational Risk: Minimal appetite. Target zero tolerance for material operational failures.
+- Cyber Risk: Averse appetite. All critical systems must maintain 99.99% uptime with real-time threat monitoring.
+- Compliance Risk: Minimal appetite. Zero tolerance for regulatory breaches.
+- Strategic Risk: Open appetite for organic growth in digital banking, cautious for M&A activity.
+
+3.3 Matters Reserved for the Board
+In accordance with the Corporate Governance Code, the following matters are reserved exclusively for Board decision:
+- Approval of annual budgets exceeding $100M
+- Appointment and removal of senior management
+- Changes to the Group's capital structure
+- Entry into new geographic markets
+- Acquisition or disposal of material assets
+
+3.4 Committee Updates
+The Audit Committee reported satisfactory progress on the remediation of three audit findings from Q3 2025. The Risk Committee noted an increase in cyber threat indicators and recommended enhanced monitoring. The Remuneration Committee proposed adjustments to the senior management incentive framework to better align with long-term shareholder value.
+
+RESOLUTION: The Board approved all items under Agenda Item 3 unanimously.
+
+Signed: J. Smith, Company Secretary

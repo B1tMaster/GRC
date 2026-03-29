@@ -39,9 +39,9 @@ export const mapToFrameworkHandler: TaskHandler<'map-to-framework'> = async ({
       id: govObj.objectiveId,
       text: govObj.text,
       sourceSection: govObj.sourceSection || '',
-      sourceSectionType: (govObj.sourceSectionType as any) || 'other',
+      sourceSectionType: (govObj.sourceSectionType ?? 'other') as ExtractorObjective['sourceSectionType'],
       sourceDocument: String(govObj.sourceDocument),
-      extractionConfidence: (govObj.extractionConfidence as any) || 'medium',
+      extractionConfidence: (govObj.extractionConfidence ?? 'medium') as ExtractorObjective['extractionConfidence'],
       keywords: Array.isArray(govObj.keywords) ? govObj.keywords as string[] : [],
     }
 

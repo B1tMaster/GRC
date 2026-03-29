@@ -7,6 +7,10 @@ import {
   buildPolicyDraftUserPrompt,
 } from '@/server/llm/workflows/grc/policy-draft-prompts'
 import { PolicyDraftResponseSchema } from '@/server/llm/workflows/grc/policy-draft-schemas'
+import type { PolicyDraftResponse } from '@/server/llm/workflows/grc/policy-draft-schemas'
+import { truncateDocumentText } from '@/server/lib/document-text'
+import { findDocumentById } from '@/server/lib/payload-helpers'
+import type { PolicyGapAnalysis } from '@/payload-types'
 
 export const draftPolicyInputSchema: Field[] = [
   { name: 'docId', type: 'text', required: true },
@@ -33,7 +37,7 @@ export const draftPolicyHandler: TaskHandler<'draft-policy'> = async ({
   try {
     const { docId, collectionSlug, traceId } = input
 
-    const doc = await payload.findByID({ collection: collectionSlug as any, id: docId })
+    const doc = await findDocumentById(payload, collectionSlug, docId)
 
     const gaps = await payload.find({
       collection: 'policy-gap-analyses',
@@ -48,22 +52,22 @@ export const draftPolicyHandler: TaskHandler<'draft-policy'> = async ({
     }
 
     const policyText = doc?.parsedText
-      ? (doc.parsedText as string).slice(0, 30000)
+      ? truncateDocumentText(doc.parsedText as string, { maxChars: 80_000, preserveParagraphs: true }).text
       : ''
 
     let draftsCreated = 0
 
     for (const gap of gaps.docs) {
-      const gapData = gap as any
+      const gapData = gap as PolicyGapAnalysis
       const frameworksStr = Array.isArray(gapData.frameworksAffected)
         ? gapData.frameworksAffected
-            .map((f: any) => `${f.frameworkName} ${f.sectionRef}`)
+            .map((f) => `${f.frameworkName} ${f.sectionRef}`)
             .join(', ')
         : 'Unknown frameworks'
 
       const generationId = `draft-policy-${traceId}-${gap.id}`
 
-      const result = await sendGeneralLlmRequest({
+      const result = await sendGeneralLlmRequest<PolicyDraftResponse>({
         name: 'draft-policy',
         systemPrompt: POLICY_DRAFTING_SYSTEM_PROMPT,
         userPrompt: buildPolicyDraftUserPrompt({
@@ -88,13 +92,13 @@ export const draftPolicyHandler: TaskHandler<'draft-policy'> = async ({
           draftId,
           policyName: result.policyName,
           version: result.version,
-          sections: result.sections.map((s: any) => ({
+          sections: result.sections.map((s) => ({
             type: s.type,
             sectionNumber: s.sectionNumber,
             title: s.title,
             content: s.content,
             previousContent: s.previousContent,
-            citations: s.citations?.map((c: any) => ({
+            citations: s.citations?.map((c) => ({
               frameworkName: c.frameworkName,
               sectionRef: c.sectionRef,
               description: c.description,
@@ -153,7 +157,7 @@ export const draftPolicyHandler: TaskHandler<'draft-policy'> = async ({
             overallConfidence: result.overallConfidence,
             humanDraftRequired: isLowConfidence,
             citationsCount: result.sections.reduce(
-              (sum: number, s: any) => sum + (s.citations?.length || 0), 0,
+              (sum: number, s) => sum + (s.citations?.length || 0), 0,
             ),
           },
           sourceTrace: {

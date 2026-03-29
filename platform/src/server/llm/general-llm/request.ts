@@ -94,7 +94,25 @@ function extractJsonFromText(text: string): string {
   return text.trim()
 }
 
-export async function sendGeneralLlmRequest(params: z.infer<typeof ParamsSchema>): Promise<any> {
+/**
+ * Checks if a structured LLM response contains empty result arrays,
+ * which indicates a "silent success" — valid JSON but no useful output.
+ */
+function detectEmptyResults(content: unknown, taskName: string): string | null {
+  if (typeof content !== 'object' || content === null) return null
+
+  const record = content as Record<string, unknown>
+  const arrayFields = Object.entries(record).filter(([, v]) => Array.isArray(v))
+
+  for (const [key, value] of arrayFields) {
+    if (Array.isArray(value) && value.length === 0) {
+      return `Task "${taskName}" returned valid JSON but "${key}" array is empty — LLM may have failed to extract results`
+    }
+  }
+  return null
+}
+
+export async function sendGeneralLlmRequest<T = Record<string, unknown>>(params: z.infer<typeof ParamsSchema>): Promise<T> {
   const { name, userPrompt, schema, temperature, systemPrompt, generationId } = ParamsSchema.parse(params)
   let { modelName } = ParamsSchema.parse(params)
 
@@ -107,7 +125,12 @@ export async function sendGeneralLlmRequest(params: z.infer<typeof ParamsSchema>
 
   const cached = await cache.get(cache.mappings.generalLlm(cacheKey))
   if (cached) {
-    return cached
+    langfuse.trace({
+      id: `${generationId}-cache-hit`,
+      name: `${name} (cache hit)`,
+      metadata: { cacheKey, source: 'redis' },
+    })
+    return cached as T
   }
 
   const trace = langfuse.trace({ id: generationId })
@@ -131,7 +154,7 @@ export async function sendGeneralLlmRequest(params: z.infer<typeof ParamsSchema>
     name,
     input: { messages },
     model: modelName,
-    metadata: { provider },
+    metadata: { provider, promptLength: userPrompt.length },
   })
 
   let retries = 0
@@ -140,7 +163,7 @@ export async function sendGeneralLlmRequest(params: z.infer<typeof ParamsSchema>
 
   while (true) {
     try {
-      let content: any
+      let content: unknown
       let usage: OpenAI.CompletionUsage | undefined
 
       if (provider === 'openai' && schema) {
@@ -176,34 +199,61 @@ export async function sendGeneralLlmRequest(params: z.infer<typeof ParamsSchema>
         }
       }
 
-      generation.end({
-        output: content,
-        usage: usage
-          ? {
-              input: usage.prompt_tokens,
-              output: usage.completion_tokens,
-              total: usage.total_tokens,
-              unit: 'TOKENS' as const,
-            }
-          : undefined,
-      })
+      const emptyWarning = detectEmptyResults(content, name)
+      if (emptyWarning) {
+        console.warn(`[LLM-OBSERVABILITY] ${emptyWarning}`)
+        generation.end({
+          output: content,
+          level: 'WARNING',
+          statusMessage: emptyWarning,
+          usage: usage
+            ? {
+                input: usage.prompt_tokens,
+                output: usage.completion_tokens,
+                total: usage.total_tokens,
+                unit: 'TOKENS' as const,
+              }
+            : undefined,
+        })
+      } else {
+        generation.end({
+          output: content,
+          usage: usage
+            ? {
+                input: usage.prompt_tokens,
+                output: usage.completion_tokens,
+                total: usage.total_tokens,
+                unit: 'TOKENS' as const,
+              }
+            : undefined,
+        })
+      }
 
-      await cache.set(cache.mappings.generalLlm(cacheKey), content, 60 * 60 * 24 * 7)
+      await cache.set(cache.mappings.generalLlm(cacheKey), content as string | number | object, 60 * 60 * 24 * 7)
 
-      return content
+      return content as T
     } catch (error) {
       const isTimeoutError = error instanceof APIConnectionTimeoutError
 
       if (isTimeoutError && retries < maxRetries) {
-        console.warn(`Timeout error encountered. Retrying in ${delay / 1000} seconds... (Attempt ${retries + 1}/${maxRetries})`, { name, generationId })
+        console.warn(`[LLM-RETRY] Timeout for "${name}" — retrying in ${delay / 1000}s (attempt ${retries + 1}/${maxRetries})`, { generationId })
         await new Promise(resolve => setTimeout(resolve, delay))
         retries++
         delay *= 2
       } else {
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        const errorType = isTimeoutError ? 'timeout_exhausted' : error?.constructor?.name || 'unknown'
+
         generation.end({
-          output: { error: error instanceof Error ? error.message : String(error) },
+          output: { error: errorMessage, errorType, retries },
+          level: 'ERROR',
+          statusMessage: `${errorType}: ${errorMessage}`,
         })
-        console.error(`Request failed for ${name} after ${retries} retries or due to a non-timeout error:`, error)
+
+        console.error(`[LLM-ERROR] Task "${name}" failed (${errorType}, ${retries} retries):`, errorMessage)
+
+        try { await langfuse.flushAsync() } catch { /* best effort flush */ }
+
         throw error
       }
     }
