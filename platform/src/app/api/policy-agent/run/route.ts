@@ -15,6 +15,8 @@ const PIPELINE_STEPS = [
 ]
 
 export const POST = async (req: Request) => {
+  const headers = corsHeaders(req)
+
   try {
     const payload = await getPayload({ config: configPromise })
     const body = await req.json()
@@ -24,7 +26,7 @@ export const POST = async (req: Request) => {
     if (!docId || !collectionSlug) {
       return Response.json(
         { error: 'Missing required fields: docId, collectionSlug' },
-        { status: 400 },
+        { status: 400, headers },
       )
     }
 
@@ -32,14 +34,14 @@ export const POST = async (req: Request) => {
     if (!validSlugs.includes(collectionSlug)) {
       return Response.json(
         { error: `Invalid collectionSlug. Must be one of: ${validSlugs.join(', ')}` },
-        { status: 400 },
+        { status: 400, headers },
       )
     }
 
     try {
       await payload.findByID({ collection: collectionSlug as any, id: docId })
     } catch {
-      return Response.json({ error: `Document ${docId} not found` }, { status: 404 })
+      return Response.json({ error: `Document ${docId} not found` }, { status: 404, headers })
     }
 
     const runId = `RUN-${crypto.randomUUID().slice(0, 8)}`
@@ -73,10 +75,10 @@ export const POST = async (req: Request) => {
       traceId,
       status: 'running',
       message: 'Pipeline started successfully',
-    })
+    }, { headers })
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
-    return Response.json({ error: message }, { status: 500 })
+    return Response.json({ error: message }, { status: 500, headers })
   }
 }
 
@@ -192,7 +194,9 @@ async function executeRunInBackground(
   }
 }
 
-export const GET = async () => {
+export const GET = async (req: Request) => {
+  const headers = corsHeaders(req)
+
   try {
     const payload = await getPayload({ config: configPromise })
 
@@ -212,9 +216,9 @@ export const GET = async () => {
         completedAt: r.completedAt,
         elapsedMs: r.elapsedMs,
       })),
-    })
+    }, { headers })
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
-    return Response.json({ error: message }, { status: 500 })
+    return Response.json({ error: message }, { status: 500, headers })
   }
 }

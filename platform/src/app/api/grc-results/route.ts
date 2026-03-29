@@ -1,6 +1,6 @@
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
-import { handlePreflight } from '@/lib/cors'
+import { handlePreflight, corsHeaders } from '@/lib/cors'
 
 export const OPTIONS = handlePreflight
 
@@ -12,13 +12,15 @@ export const OPTIONS = handlePreflight
  * GET /api/grc-results?runId=RUN-xxx
  */
 export const GET = async (req: Request) => {
+  const headers = corsHeaders(req)
+
   try {
     const payload = await getPayload({ config: configPromise })
     const url = new URL(req.url)
     const runId = url.searchParams.get('runId')
 
     if (!runId) {
-      return Response.json({ error: 'Missing runId query parameter' }, { status: 400 })
+      return Response.json({ error: 'Missing runId query parameter' }, { status: 400, headers })
     }
 
     const runs = await payload.find({
@@ -28,7 +30,7 @@ export const GET = async (req: Request) => {
     })
 
     if (runs.docs.length === 0) {
-      return Response.json({ error: `Run ${runId} not found` }, { status: 404 })
+      return Response.json({ error: `Run ${runId} not found` }, { status: 404, headers })
     }
 
     const run = runs.docs[0] as any
@@ -84,9 +86,9 @@ export const GET = async (req: Request) => {
       controls: controls.docs,
       gaps: gaps.docs,
       drafts: drafts.docs,
-    })
+    }, { headers })
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
-    return Response.json({ error: message }, { status: 500 })
+    return Response.json({ error: message }, { status: 500, headers })
   }
 }

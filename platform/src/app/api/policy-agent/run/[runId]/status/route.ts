@@ -1,6 +1,6 @@
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
-import { handlePreflight } from '@/lib/cors'
+import { handlePreflight, corsHeaders } from '@/lib/cors'
 
 export const OPTIONS = handlePreflight
 
@@ -9,6 +9,7 @@ export const GET = async (
   { params }: { params: Promise<{ runId: string }> },
 ) => {
   const { runId } = await params
+  const headers = corsHeaders(req)
 
   try {
     const payload = await getPayload({ config: configPromise })
@@ -20,7 +21,7 @@ export const GET = async (
     })
 
     if (runs.docs.length === 0) {
-      return Response.json({ error: `Run ${runId} not found` }, { status: 404 })
+      return Response.json({ error: `Run ${runId} not found` }, { status: 404, headers })
     }
 
     const run = runs.docs[0] as any
@@ -65,9 +66,9 @@ export const GET = async (
         details: e.details,
         timestamp: e.createdAt,
       })),
-    })
+    }, { headers })
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
-    return Response.json({ error: message }, { status: 500 })
+    return Response.json({ error: message }, { status: 500, headers })
   }
 }
