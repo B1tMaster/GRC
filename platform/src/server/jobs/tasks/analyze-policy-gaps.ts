@@ -126,7 +126,7 @@ export const analyzePolicyGapsHandler: TaskHandler<'analyze-policy-gaps'> = asyn
           reasoning: gap.reasoning,
           sourceRun: traceId,
           sourceDocumentType: collectionSlug as any,
-          sourceDocument: { relationTo: collectionSlug, value: docId } as any,
+          sourceDocument: { relationTo: collectionSlug, value: Number(docId) } as any,
           status: 'identified',
         },
       })
