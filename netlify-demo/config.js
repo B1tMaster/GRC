@@ -1,8 +1,8 @@
 /**
  * Runtime configuration for the Evonix prototype.
  *
- * On Netlify, set the environment variable EVONIX_API_BASE in the site
- * settings (e.g. https://your-platform.up.railway.app). The build script
- * injects it here. For local development, defaults to localhost:3000.
+ * API calls use the Netlify proxy (/api/* -> Railway backend) to avoid CORS.
+ * Set to empty string so fetch() uses same-origin relative paths.
+ * For local development against a separate backend, set to the backend URL.
  */
-window.EVONIX_API_BASE = 'https://evonix-app-production.up.railway.app';
+window.EVONIX_API_BASE = '';

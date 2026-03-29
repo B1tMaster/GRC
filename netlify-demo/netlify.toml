@@ -2,6 +2,13 @@
   publish = "."
   command = "node -e \"const fs=require('fs');const f='config.js';fs.writeFileSync(f,fs.readFileSync(f,'utf8').replace(/__EVONIX_API_BASE__/g,process.env.EVONIX_API_BASE||'http://localhost:3000'))\""
 
+# Proxy API calls to Railway backend (eliminates CORS issues)
+[[redirects]]
+  from = "/api/*"
+  to = "https://evonix-app-production.up.railway.app/api/:splat"
+  status = 200
+  force = true
+
 # Clean URL for landing page
 [[redirects]]
   from = "/landing"
