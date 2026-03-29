@@ -1,6 +1,6 @@
 [build]
   publish = "."
-  command = "node -e \"const fs=require('fs');const f='config.js';fs.writeFileSync(f,fs.readFileSync(f,'utf8').replace(/__EVONIX_API_BASE__/g,process.env.EVONIX_API_BASE||'http://localhost:3000'))\""
+  command = "node -e \"const fs=require('fs');const f='config.v2.js';fs.writeFileSync(f,fs.readFileSync(f,'utf8').replace(/__EVONIX_API_BASE__/g,process.env.EVONIX_API_BASE||'http://localhost:3000'))\""
 
 # Proxy API calls to Railway backend (eliminates CORS issues)
 [[redirects]]
@@ -39,4 +39,4 @@
 [[headers]]
   for = "*.js"
   [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
+    Cache-Control = "public, max-age=300"
