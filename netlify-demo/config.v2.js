@@ -1,8 +1,6 @@
 /**
  * Runtime configuration for the Evonix prototype.
- *
- * API calls use the Netlify proxy (/api/* -> Railway backend) to avoid CORS.
- * Set to empty string so fetch() uses same-origin relative paths.
- * For local development against a separate backend, set to the backend URL.
+ * Points directly to the Railway backend. CORS is configured on Railway
+ * to allow evonix-demo.netlify.app.
  */
-window.EVONIX_API_BASE = '';
+window.EVONIX_API_BASE = 'https://evonix-app-production.up.railway.app';
