@@ -8,7 +8,7 @@ const ALLOWED_ORIGINS = (process.env.CORS_ALLOWED_ORIGINS || '')
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
-  serverExternalPackages: ['pdf-parse'],
+  serverExternalPackages: ['unpdf'],
 
   async headers() {
     if (ALLOWED_ORIGINS.length === 0) return []
