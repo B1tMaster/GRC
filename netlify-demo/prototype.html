@@ -1799,7 +1799,7 @@
         try {
           const res = await api('/api/policy-agent/run', {
             method: 'POST',
-            body: JSON.stringify({ docId: lastUploadedDocId, collectionSlug: lastCollectionSlug }),
+            body: JSON.stringify({ docId: isNaN(Number(lastUploadedDocId)) ? lastUploadedDocId : Number(lastUploadedDocId), collectionSlug: lastCollectionSlug }),
           });
           const data = await res.json();
           currentRunId = data.runId;
@@ -2179,7 +2179,7 @@
           try {
             const res = await api('/api/policy-agent/run', {
               method: 'POST',
-              body: JSON.stringify({ docId: grcDocId, collectionSlug: grcCollectionSlug }),
+              body: JSON.stringify({ docId: isNaN(Number(grcDocId)) ? grcDocId : Number(grcDocId), collectionSlug: grcCollectionSlug }),
             });
             const data = await res.json();
             grcRunId = data.runId;
