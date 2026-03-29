@@ -46,7 +46,6 @@ export const BoardCircularsCollection: CollectionConfig = {
     {
       name: 'parsedText',
       type: 'textarea',
-      maxLength: 1000000,
       admin: { readOnly: true },
     },
     {
