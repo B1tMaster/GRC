@@ -1,7 +1,7 @@
 # Evonix GRC — Demo Script
 
-**Source Deck:** `Evonix_GRC_v0.5_FIN.pptx` (11 slides)
-**Duration:** ~15 minutes (slides + live demo)
+**Source Deck:** `Evonix_GRC_v0.6_UPDATED.pptx` (15 slides — original 10 + 5 new)
+**Duration:** ~20 minutes (slides + live demo)
 **Prototype URL:** https://evonix-demo.netlify.app/prototype
 
 ---
@@ -34,11 +34,17 @@
 
 ---
 
-## Slide 3 — The Founder
+## Slide 3 — Day-Zero Legacy (NEW)
 
-*Image: Mark Syed, Co-Founder*
+*"THE PROBLEM — Day-Zero Legacy."*
 
-> "My name is Mark Syed. I'm the Co-Founder of Evonix. I've spent 20+ years across government, finance, and technology — living this problem firsthand. I've sat in the audit committees. I've wrestled with the spreadsheets. And I knew there had to be a better way."
+> "Here's the core issue with every traditional GRC tool on the market — IBM, Archer, ServiceNow, MetricStream. They impose a rigid data model and deterministic workflows onto your organisation. Fixed risk taxonomies. Static control libraries. One-size-fits-all frameworks.
+>
+> The moment you implement, it's already legacy. You spend months adapting your organisation to the tool — instead of the tool adapting to you.
+>
+> We call this **Day-Zero Legacy**. And it's why GRC programs fail. They start out of date.
+>
+> **Evonix flips this.** We start from your organisation's own context — your board papers, your leadership objectives, your annual reports — and build the GRC framework dynamically around what you've already committed to."
 
 ---
 
@@ -54,7 +60,23 @@
 
 ---
 
-## Slide 5 — The Solution
+## Slide 5 — 37 Minutes: The Proof (NEW)
+
+*"THE PROOF — 37 minutes. vs 10 weeks of analyst time."*
+
+> "Let me give you the proof point. We ran Berkshire Hathaway's 272-page 10-K filing through Evonix. In **37 minutes**, it produced 17 governance objectives, 84 controls, 10 gap analyses, and 10 policy drafts.
+>
+> A team of analysts doing the same mapping? **7 to 10 weeks**. Cost: **$27,000 to $61,000** per document.
+>
+> Evonix did it for **under $2 of compute**.
+>
+> And we didn't stop at one document. We ran HSBC, NVIDIA, Samsung, and Berkshire — **852 pages** across 4 documents, **290 controls** derived, all mapped in **under 2 hours total**. The manual equivalent? Six months of analyst work."
+
+*(Let the numbers sink in)*
+
+---
+
+## Slide 6 — The Solution
 
 *"AI agents that operate compliance."*
 
@@ -68,7 +90,19 @@
 
 ---
 
-## Slide 6 — How It Works
+## Slide 7 — Two Superpowers (NEW)
+
+*"WHAT MAKES US DIFFERENT — Two Superpowers."*
+
+> "Evonix has two superpowers that no traditional GRC platform can match.
+>
+> **Superpower one: Organisation Context First.** Org chart, board philosophy, leadership values, annual reports, strategy documents — all of this feeds the agentic AI landscape. Evonix understands *your* organisation, not a generic template. The system starts from what leadership has committed to, and builds from there.
+>
+> **Superpower two: Dynamic AI Agents.** These agents continuously monitor, challenge, develop, and examine how controls operate, how risks are emerging, and whether processes are still fit for purpose. This isn't a snapshot taken once a year. It's a living system with a continuous heartbeat."
+
+---
+
+## Slide 8 — How It Works
 
 *"One agent per line. Always on." — Architecture flow diagram*
 
@@ -95,7 +129,37 @@
 
 ---
 
-## Slide 7 — The Demo
+## Slide 9 — Adversarial by Design (NEW)
+
+*"THE ARCHITECTURE — Adversarial by Design."*
+
+> "Now, the AI agents aren't just running tasks. They're **adversarial by design**. Each agent is bound to its line of defence — it has a persona, a philosophy, boundaries it doesn't cross.
+>
+> **First line agents** own the processes and risks. They execute controls and report upward.
+>
+> **Second line agents** challenge. They bring frameworks, industry opinion, regulatory view. They provide built-in adversarial oversight — automatically, continuously.
+>
+> **Third line agents** establish evidence. They test control effectiveness from both a design perspective — is the control well-designed? — and an operations perspective — is it actually working?
+>
+> This adversarial dynamic is cascaded from the very top of the organisation. It's structural, not ad hoc. Every agent has a philosophy it doesn't cross."
+
+---
+
+## Slide 10 — The Heartbeat (NEW)
+
+*"THE HEARTBEAT — Continuous. Not periodic."*
+
+> "And this brings us to the heartbeat. In traditional GRC, RCSAs happen annually. Control testing is quarterly at best. Assurance is a point-in-time exercise.
+>
+> In Evonix, the heartbeat of risk and controls is **built in**. The cycle runs continuously: **Ingest** board papers, annual reports, regulatory feeds — multi-modal, PDFs, audio, verbal. **Analyse** — extract objectives, derive controls, map to frameworks, adjust priorities continuously. **Challenge** — second line agents challenge first line, adversarial review in every cycle. **Assure** — third line evidence testing, design and operational effectiveness.
+>
+> And then it loops back. Always on. Always current.
+>
+> **Traditional GRC: annual cycle. Evonix: always on.**"
+
+---
+
+## Slide 11 — The Demo
 
 *"Upload your annual report. Watch this happen."*
 
@@ -169,7 +233,7 @@ After ~60 seconds, objectives start appearing:
 
 ---
 
-## Slide 8 — Why We Win
+## Slide 12 — Why We Win
 
 *"The moat isn't 'using AI.'"*
 
@@ -189,7 +253,7 @@ After ~60 seconds, objectives start appearing:
 
 ---
 
-## Slide 9 — Enterprise-Ready
+## Slide 13 — Enterprise-Ready
 
 *"Built for the enterprise. Trusted by regulators."*
 
@@ -205,7 +269,7 @@ After ~60 seconds, objectives start appearing:
 
 ---
 
-## Slide 10 — Our Principles
+## Slide 14 — Our Principles
 
 *"AI assists. Humans remain accountable."*
 
@@ -221,7 +285,7 @@ After ~60 seconds, objectives start appearing:
 
 ---
 
-## Slide 11 — Close
+## Slide 15 — Close
 
 *Visual: Handshake over circuit board — partnership meets technology*
 
