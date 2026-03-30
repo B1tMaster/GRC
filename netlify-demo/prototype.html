@@ -343,6 +343,19 @@
           <div style="display:flex;gap:8px;">
             <button class="btn primary" id="grc-run-btn" disabled style="opacity:0.4;">Run GRC Extraction Pipeline</button>
           </div>
+          <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--line);">
+            <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:6px;">Load Previous Run</label>
+            <div style="display:flex;gap:6px;">
+              <select id="grc-run-select" style="flex:1;padding:8px;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;color:var(--text);font-size:12px;">
+                <option value="">Select a previous run...</option>
+                <option value="RUN-627d905b">HSBC Annual Report 2025</option>
+                <option value="RUN-9fce5677">NVIDIA 10-K 2025</option>
+                <option value="RUN-896533e2">Samsung Annual Report 2024</option>
+                <option value="RUN-7872bbe6">Berkshire Hathaway 10-K 2024</option>
+              </select>
+              <button class="btn" id="grc-load-run-btn" style="font-size:12px;padding:8px 14px;">Load</button>
+            </div>
+          </div>
         </div>
 
         <div class="card" id="grc-themes-card">
@@ -2191,6 +2204,51 @@
             grcAddAudit('Pipeline Start Failed', 'System', err.message, 'red');
             document.getElementById('grc-results-summary').innerHTML = `<span style="color:var(--red);">Failed to start pipeline: ${err.message}</span>`;
             runBtn.disabled = false; runBtn.style.opacity = '1'; runBtn.textContent = 'Run GRC Extraction Pipeline';
+          }
+        });
+
+        // Load previous run
+        document.getElementById('grc-load-run-btn').addEventListener('click', async () => {
+          const select = document.getElementById('grc-run-select');
+          const selectedRunId = select.value;
+          if (!selectedRunId) return;
+
+          grcRunId = selectedRunId;
+          const label = select.options[select.selectedIndex].text;
+          document.getElementById('grc-results-summary').innerHTML = `Loading results for <strong>${label}</strong> (<code>${selectedRunId}</code>)...`;
+
+          ['grc-objectives-section', 'grc-risk-section', 'grc-controls-section', 'grc-gaps-section', 'grc-drafts-section'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) { el.style.display = 'none'; el.style.opacity = '0'; }
+          });
+
+          try {
+            const res = await api(`/api/grc-results?runId=${selectedRunId}`);
+            const data = await res.json();
+
+            const countsEl = document.getElementById('grc-results-counts');
+            countsEl.style.display = 'block';
+            document.getElementById('grc-count-objectives').textContent = data.objectives?.length ?? 0;
+            document.getElementById('grc-count-controls').textContent = data.controls?.length ?? 0;
+            document.getElementById('grc-count-risks').textContent = data.riskStatements?.length ?? 0;
+            document.getElementById('grc-count-mappings').textContent = '-';
+            document.getElementById('grc-count-gaps').textContent = data.gaps?.length ?? 0;
+            document.getElementById('grc-count-drafts').textContent = data.drafts?.length ?? 0;
+
+            if (data.objectives?.length > 0) renderGrcObjectives(data.objectives);
+            if (data.riskStatements?.length > 0) renderGrcRiskAppetite(data.riskStatements);
+            if (data.controls?.length > 0) renderGrcControls(data.controls);
+            if (data.gaps?.length > 0) renderGrcGaps(data.gaps);
+            if (data.drafts?.length > 0) renderGrcDrafts(data.drafts);
+
+            document.getElementById('grc-results-summary').innerHTML = `Loaded <strong>${label}</strong> &mdash; <code>${selectedRunId}</code>`;
+
+            document.querySelectorAll('.grc-pipe-step').forEach(s => {
+              s.style.background = 'var(--green)';
+              s.style.color = '#fff';
+            });
+          } catch (err) {
+            document.getElementById('grc-results-summary').innerHTML = `<span style="color:var(--red);">Failed to load run: ${err.message}</span>`;
           }
         });
 
